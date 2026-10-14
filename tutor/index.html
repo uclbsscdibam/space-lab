@@ -1,0 +1,770 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>html{color-scheme:light}body{margin:0;font:14px system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Space Lab · Tutor</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: a drafting-table tool — plan on the left, live readings on the right, stacked on phones */
+:root{
+  --bg:#f6f7f5; --panel:#ffffff; --ink:#1d2321; --muted:#5d6763; --line:#d8ddda; --grid:#e3e7e4;
+  --accent:#0f6b5c; --accent-ink:#ffffff; --wall:#1d2321; --furn:#ffffff; --furn-line:#6b7470;
+  --z-desk:#bcd7ff; --z-corr:#d6d9d8; --z-meet:#ffcfae; --z-break:#c4ecce; --z-sup:#dccdf6; --z-core:#d9c8b1;
+  --ok:#1f7a3a; --ok-bg:#e3f4e7; --bad:#b3261e; --bad-bg:#fbe7e5; --warn-bg:#fff4d6;
+  --occ:#1a5fd1; --sol:#c27a00;
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-body:"IBM Plex Sans","Segoe UI",Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141917; --panel:#1c2220; --ink:#e7ece9; --muted:#9aa5a0; --line:#323a37; --grid:#2a312e;
+  --accent:#4fc2a8; --accent-ink:#0d1412; --wall:#e7ece9; --furn:#252c29; --furn-line:#8d9893;
+  --z-desk:#2b4a77; --z-corr:#3b4140; --z-meet:#6e4630; --z-break:#2d5a3a; --z-sup:#4a3a6b; --z-core:#5b4b38;
+  --ok:#7ad69a; --ok-bg:#1d3526; --bad:#ff8a80; --bad-bg:#3d2220; --warn-bg:#3a3220;
+  --occ:#7fb0ff; --sol:#f2b84b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141917; --panel:#1c2220; --ink:#e7ece9; --muted:#9aa5a0; --line:#323a37; --grid:#2a312e;
+  --accent:#4fc2a8; --accent-ink:#0d1412; --wall:#e7ece9; --furn:#252c29; --furn-line:#8d9893;
+  --z-desk:#2b4a77; --z-corr:#3b4140; --z-meet:#6e4630; --z-break:#2d5a3a; --z-sup:#4a3a6b; --z-core:#5b4b38;
+  --ok:#7ad69a; --ok-bg:#1d3526; --bad:#ff8a80; --bad-bg:#3d2220; --warn-bg:#3a3220;
+  --occ:#7fb0ff; --sol:#f2b84b; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:20px 48px}
+header{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between;border-bottom:2px solid var(--ink);padding-bottom:14px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(26px,4vw,38px);line-height:1.05;margin:4px 0 0;text-wrap:balance}
+h2{font-family:var(--f-display);font-weight:700;font-size:20px;margin:0;text-wrap:balance}
+h3{font-family:var(--f-display);font-weight:700;font-size:15px;margin:0}
+.facts{display:flex;flex-wrap:wrap;gap:8px}
+.fact{font-family:var(--f-mono);font-size:13px;border:1px solid var(--line);background:var(--panel);padding:4px 10px;border-radius:4px;font-variant-numeric:tabular-nums}
+.group{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.group input{width:110px;font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:5px 8px}
+.tabs{display:flex;gap:4px;margin:18px 0 0;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{font:600 14px var(--f-body);color:var(--muted);background:none;border:0;border-bottom:3px solid transparent;padding:10px 14px;cursor:pointer;white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.tab .n{font-family:var(--f-mono);margin-right:6px;color:var(--accent)}
+.intro{max-width:70ch;color:var(--muted);margin:16px 0 18px}
+.intro b{color:var(--ink)}
+.grid2{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:860px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px}
+.stack{display:flex;flex-direction:column;gap:16px;min-width:0}
+.tools{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.tool{display:flex;align-items:center;gap:8px;font:500 13px var(--f-body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:6px 10px;cursor:pointer}
+.tool[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);background:var(--panel)}
+.sw{width:16px;height:16px;border-radius:3px;border:1px solid var(--furn-line)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.plan{width:100%;height:auto;display:block;touch-action:none;user-select:none;-webkit-user-select:none;cursor:crosshair}
+.hint{font-size:12.5px;color:var(--muted);margin-top:8px}
+.readings{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.readings td{padding:7px 0;border-bottom:1px solid var(--line)}
+.readings td:last-child{text-align:right;font-family:var(--f-mono)}
+.readings tr.total td{border-bottom:0;font-weight:600}
+.dot{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:8px;vertical-align:-1px;border:1px solid var(--furn-line)}
+.btn{font:600 14px var(--f-body);background:var(--accent);color:var(--accent-ink);border:0;border-radius:4px;padding:9px 14px;cursor:pointer}
+#subBtn{display:inline-flex;align-items:center;gap:8px;font-size:15px;padding:11px 18px}
+#subBtn:disabled{background:var(--line);color:var(--muted);cursor:not-allowed}
+#subBtn.ready{background:var(--ok);color:#fff;box-shadow:0 0 0 4px var(--ok-bg)}
+#subBtn svg{flex:none}
+.subnote{font-size:13.5px;color:var(--muted)}
+.subnote.ready{color:var(--ok);font-weight:600}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.msg{font-size:13.5px;border-radius:4px;padding:8px 10px;margin-top:10px}
+.msg.ok{background:var(--ok-bg);color:var(--ok)}
+.msg.bad{background:var(--bad-bg);color:var(--bad)}
+.msg.info{background:var(--warn-bg);color:var(--ink)}
+.q{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.q:last-child{border-bottom:0}
+.qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));column-gap:28px}
+.qgrid .q:last-child{border-bottom:1px solid var(--line)}
+.q label{font-weight:600}
+.q .how{grid-column:1/-1;font-size:12.5px;color:var(--muted);display:flex;flex-direction:column;gap:2px;margin-top:2px}
+.q .ans{grid-column:1/-1;font-size:13px;background:var(--warn-bg);border-radius:4px;padding:6px 8px;font-family:var(--f-mono)}
+.q .ans b{font-family:var(--f-body)}
+.q .how b{color:var(--ink);font-weight:600}
+.q .how code{font-family:var(--f-mono);font-size:12px;color:var(--ink)}
+.q input,.q select{width:110px;font:500 15px var(--f-mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:6px 8px;text-align:right}
+.q select{text-align:left;width:150px;font-family:var(--f-body);font-size:14px}
+.q.ok input,.q.ok select{border-color:var(--ok);background:var(--ok-bg)}
+.q.bad input,.q.bad select{border-color:var(--bad);background:var(--bad-bg)}
+.q .fb{grid-column:1/-1;font-size:12.5px}
+.q.ok .fb{color:var(--ok)} .q.bad .fb{color:var(--bad)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);margin-top:8px}
+.legend span{display:flex;align-items:center;gap:6px}
+.times{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.time{font:600 14px var(--f-mono);background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:6px 12px;cursor:pointer}
+.time[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.time small{font-family:var(--f-body);font-weight:500;font-size:11px;margin-left:6px;opacity:.75}
+.sheet-wrap{overflow-x:auto}
+.sheet{border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:13px;width:100%}
+.sheet th,.sheet td{border:1px solid var(--line);padding:3px 4px;text-align:center}
+.sheet th{font:600 12px var(--f-mono);color:var(--muted);background:var(--bg)}
+.sheet td.d{font:500 12px var(--f-mono);color:var(--muted);text-align:left;padding-left:8px}
+.cellbtn{width:100%;min-width:34px;font:600 12px var(--f-mono);border:0;border-radius:3px;padding:3px 0;cursor:pointer;background:transparent;color:var(--muted)}
+.cellbtn.O{background:var(--occ);color:var(--panel)} .cellbtn.S{background:var(--sol);color:var(--panel)} .cellbtn.E{background:var(--grid);color:var(--ink)}
+.modes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;align-items:stretch;margin:4px 0 6px}
+@media (max-width:560px){.modes{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.modes-lab{font-size:13px;font-weight:600;color:var(--muted);align-self:center;width:100%;grid-column:1/-1}
+.mode{display:flex;gap:8px;align-items:center;text-align:left;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 10px;cursor:pointer;font:inherit}
+.mode strong{display:block;font-size:13.5px}.mode small{display:block;font-size:11.5px;color:var(--muted)}
+.mode[aria-checked="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);background:var(--panel)}
+.mk{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:4px;font:700 13px var(--f-mono)}
+.mk.O{background:var(--occ);color:var(--panel)}.mk.S{background:var(--sol);color:var(--panel)}.mk.E{background:var(--grid);color:var(--ink)}.mk.X{background:var(--panel);color:var(--muted);border:1px solid var(--line)}
+#modeNow{font-weight:500;color:var(--ink)}
+.cur{outline:2px solid var(--accent);outline-offset:-2px}
+.bars{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:end;height:150px;margin:8px 0 4px;border-bottom:1px solid var(--line)}
+.bar{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%}
+.bar .v{font:500 12px var(--f-mono);margin-bottom:4px}
+.bar .b{width:70%;background:var(--accent);border-radius:3px 3px 0 0;min-height:2px;transition:height .3s}
+.barlab{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;text-align:center;font:500 12px var(--f-mono);color:var(--muted)}
+.target{position:relative}
+.stat{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+.stat>div{border:1px solid var(--line);border-radius:4px;padding:8px 10px}
+#scene g:focus:not(:focus-visible){outline:none}
+.stat .k{font-size:12px;color:var(--muted)} .stat .v{font:700 22px var(--f-display);font-variant-numeric:tabular-nums}
+@media (max-width:480px){.stat{grid-template-columns:minmax(0,1fr)}}
+.switch{display:flex;gap:8px;align-items:center;font-size:13.5px}
+.note{font-size:13px;color:var(--muted);border-left:3px solid var(--line);padding-left:10px}
+.final{margin-top:20px}
+.pp{border:1px solid var(--line);border-radius:6px;padding:4px 12px 4px;margin:12px 0 0}
+.pp legend{font:700 14px var(--f-display);padding:0 6px}
+.checklist{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-direction:column;gap:8px}
+.checklist li{display:flex;gap:10px;align-items:flex-start;font-size:14px}
+.checklist .ic{flex:none;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;font:700 12px var(--f-mono)}
+.checklist .done .ic{background:var(--ok-bg);color:var(--ok)}.checklist .todo .ic{background:var(--bad-bg);color:var(--bad)}
+.final ul{margin:8px 0 0;padding-left:20px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<style>
+.tbadge{background:var(--sol);color:#fff;padding:1px 8px;border-radius:3px;letter-spacing:.04em}
+.tbtn{grid-column:1/-1;justify-self:start;font:600 12.5px var(--f-body);color:var(--accent);background:none;border:1px solid var(--accent);border-radius:4px;padding:3px 10px;cursor:pointer;margin-top:4px}
+.tans{grid-column:1/-1;background:var(--warn-bg);border-radius:4px;padding:8px 10px;margin-top:6px;font-size:14px;display:flex;flex-direction:column;gap:2px}
+.tans[hidden]{display:none!important}
+.thow{font-size:12.5px;color:var(--muted)}
+.tcard{margin-top:20px}
+.tcard .readings td{text-align:center}.tcard .readings td:first-child{text-align:left}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow">BIDI0008 · Tutorial 2 · <span class="tbadge">Tutor version · answers</span></div>
+      <h1>Space Measurement Lab</h1>
+    </div>
+    <div class="row" style="gap:12px">
+      
+      
+    </div>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab1" aria-selected="true" data-tab="p1"><span class="n">1</span>Measure: small office</button>
+    <button class="tab" role="tab" id="tab1b" aria-selected="false" data-tab="p1b"><span class="n">2</span>Measure: tower floor</button>
+    <button class="tab" role="tab" id="tab2" aria-selected="false" data-tab="p2"><span class="n">3</span>Count the use</button>
+  </div>
+
+  <!-- PART 1 -->
+  <section id="p1">
+    <div class="facts" style="margin-top:16px"><span class="fact">Level 1 · small office</span><span class="fact">20 × 10 m floor</span><span class="fact">20 desks</span><span class="fact">30 staff</span><span class="fact">1 square = 1 m²</span></div>
+    <p class="intro"><b>Space data: how much space do we have, and how is it divided?</b> Pick a zone, then click or drag over the grid squares to colour the plan. The lab counts the squares for you. Then use your zone areas to work out the numbers below. Each one has a short explanation of what it means. Press Check when you are done.</p>
+    <div class="grid2">
+      <div class="card">
+        <div class="tools" id="tools"></div>
+        <svg id="plan" class="plan" viewBox="-14 -14 628 328" aria-label="Office floor plan with a 1 metre grid"></svg>
+        <div class="hint">Thick line = wall · gap with a curve = door · small box = desk · circle = chair. Wall thickness is ignored in this exercise.</div>
+        <div class="row" style="margin-top:12px">
+          <button class="btn ghost" id="checkPaint">Check my colouring</button>
+          <button class="btn ghost" id="clearPaint">Clear</button>
+          <button class="btn ghost" id="showZones">Show correct zones</button>
+        </div>
+        <div id="paintMsg"></div>
+      </div>
+      <div class="card">
+        <h3>Zone areas (counted live)</h3>
+        <table class="readings" id="areaTable"></table>
+      </div>
+    </div>
+    <div class="card" style="margin-top:20px">
+      <h3>Your calculations</h3>
+      <div id="qs" class="qgrid"></div>
+      <div class="row" style="margin-top:12px"><button class="btn" id="checkQs">Check answers</button></div>
+      <div id="qsMsg"></div>
+    </div>
+    <div class="card final">
+      <h3>Before you move on: what can't this plan tell you?</h3>
+      <p class="note">The plan gives you space data only. Are the 20 desks actually used? When is the office busiest? Is it too noisy?</p>
+    </div>
+  </section>
+
+  <!-- LEVEL 2: TOWER FLOOR -->
+  <section id="p1b" hidden>
+    <div class="facts" style="margin-top:16px"><span class="fact">Level 2 · tower floor</span><span class="fact">30 × 20 m floor</span><span class="fact">60 desks</span><span class="fact">75 staff</span><span class="fact">1 square = 1 m²</span></div>
+    <p class="intro"><b>A typical floor in an office tower.</b> It has a central core (lifts, stairs, toilets, risers) that the tenant cannot use for work, a main corridor around the core, and more kinds of rooms. Colour the zones, then work out the numbers below.</p>
+    <div class="grid2">
+      <div class="card">
+        <div class="tools" id="tools2"></div>
+        <svg id="plan2" class="plan" viewBox="-12 -12 744 504" aria-label="Office tower floor plan with a 1 metre grid"></svg>
+        <div class="hint">Dashed line = edge of the main corridor · grey bars = storage units · long tables = co-working · desks boxed in by screens = fixed desks (cubicles) · lift = box with a cross · stairs = striped box · the core is the thick-walled block in the middle. Wall thickness is ignored.</div>
+        <div class="row" style="margin-top:12px">
+          <button class="btn ghost" id="checkPaint2">Check my colouring</button>
+          <button class="btn ghost" id="clearPaint2">Clear</button>
+          <button class="btn ghost" id="showZones2">Show correct zones</button>
+        </div>
+        <div id="paintMsg2"></div>
+      </div>
+      <div class="card">
+        <h3>Zone areas (counted live)</h3>
+        <table class="readings" id="areaTable2"></table>
+      </div>
+    </div>
+    <div class="card" style="margin-top:20px">
+      <h3>Your calculations</h3>
+      <div id="qs2" class="qgrid"></div>
+      <div class="row" style="margin-top:12px"><button class="btn" id="checkQs2">Check answers</button></div>
+      <div id="qsMsg2"></div>
+    </div>
+    <div class="card final">
+      <h3>Compare the two floors</h3>
+      <ul>
+        <li>Which floor gives each desk more space? Which one has more support space?</li>
+        <li>The tower floor loses space to the core. Is 86% efficiency good or bad?</li>
+        <li>What would you need to collect next to know whether the meeting rooms and booths are actually used?</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- PART 2 -->
+  <section id="p2" hidden>
+    <p class="intro"><b>Use data: how much is the space actually used?</b> You are doing a walk-round observation of the desk area three times in one day. For each time, look at every desk and record what you see. First choose <b>O</b> occupied, <b>S</b> signs of life or <b>E</b> empty, then click the desks that match. Tip: record the O and S desks first, then press “Mark all unrecorded desks empty”.</p>
+    <div class="grid2">
+      <div class="stack">
+        <div class="card">
+          <div class="times" id="times"></div>
+          <div class="modes" role="radiogroup" aria-label="What are you recording?">
+            <span class="modes-lab">1. Choose what you see:</span>
+            <button type="button" class="mode" data-m="O" role="radio"><b class="mk O">O</b><span><strong>Occupied</strong><small>a person is at the desk</small></span></button>
+            <button type="button" class="mode" data-m="S" role="radio"><b class="mk S">S</b><span><strong>Signs of life</strong><small>laptop, bag or coat, no person</small></span></button>
+            <button type="button" class="mode" data-m="E" role="radio"><b class="mk E">E</b><span><strong>Empty</strong><small>nothing on the desk</small></span></button>
+            <button type="button" class="mode" data-m="" role="radio"><b class="mk X">✕</b><span><strong>Eraser</strong><small>remove a record</small></span></button>
+          </div>
+          <div class="modes-lab" style="margin:2px 0 8px">2. Click the desks (or the cells in the sheet) that match. <span id="modeNow"></span></div>
+          <svg id="scene" class="plan" viewBox="-6 -6 612 132" style="cursor:pointer" aria-label="Desk area observation"></svg>
+          <div class="legend">
+            <span><svg width="18" height="18" viewBox="0 0 18 18"><circle cx="9" cy="6" r="4" fill="var(--occ)"/><path d="M2 17c0-4 3-6 7-6s7 2 7 6z" fill="var(--occ)"/></svg>Person at desk = occupied</span>
+            <span><svg width="18" height="18" viewBox="0 0 18 18"><rect x="2" y="6" width="11" height="8" rx="1" fill="var(--sol)"/><rect x="11" y="3" width="5" height="11" rx="1" fill="var(--sol)" opacity=".7"/></svg>Laptop, bag or coat but no person = signs of life</span>
+            <span><svg width="18" height="18" viewBox="0 0 18 18"><rect x="2" y="4" width="14" height="10" rx="1" fill="none" stroke="var(--furn-line)"/></svg>Nothing = empty</span>
+          </div>
+          <div class="row" style="margin-top:12px"><button class="btn ghost" id="fillRound">Mark all unrecorded desks empty</button><button class="btn ghost" id="clearRound">Clear this time</button></div>
+        </div>
+        <div class="card">
+          <h3>Results from your recordings</h3>
+          <label class="switch" style="margin-top:8px"><input type="checkbox" id="solToggle"> Count “signs of life” as used</label>
+          <div class="bars" id="bars"></div>
+          <div class="barlab"><span>10:00</span><span>12:00</span><span>14:00</span></div>
+          <div class="stat">
+            <div><div class="k">Average utilisation</div><div class="v" id="avgU">–</div></div>
+            <div><div class="k">Peak utilisation</div><div class="v" id="peakU">–</div></div>
+            <div><div class="k">Desks needed at 80% target</div><div class="v" id="need">–</div></div>
+          </div>
+          <p class="hint">Utilisation = desks used ÷ 20 desks.<br>Desks needed = peak utilisation ÷ 80% target × 20 desks, rounded up (Lecture 2b).</p>
+          <div class="row" style="margin-top:6px"><button class="btn" id="checkObs">Compare with the true count</button></div>
+          <div id="obsMsg"></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Observation sheet</h3>
+        <p class="hint" style="margin-top:2px">The highlighted column is the time you are looking at.</p>
+        <div class="sheet-wrap"><table class="sheet" id="sheet"></table></div>
+      </div>
+    </div>
+    <div class="card final">
+      <h3>Discuss with your partner, then compare with another pair</h3>
+      <ul>
+        <li>Did you count “signs of life” as used? How much did that change the answer?</li>
+        <li>What does this observation still not tell you (noise, comfort, why people stay away)? Which method would you use for that?</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<script>
+(()=>{
+const NS='http://www.w3.org/2000/svg', C=30, W=20, H=10;
+const $=s=>document.querySelector(s);
+const el=(t,a={},p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e};
+
+/* ---------- Zones ---------- */
+const Z={desk:{name:'Desk area',v:'--z-desk'},corr:{name:'Corridor (circulation)',v:'--z-corr'},meet:{name:'Meeting & focus rooms',v:'--z-meet'},brk:{name:'Break-out / kitchen',v:'--z-break'}};
+const truth=(x,y)=> y<4?'desk': y<6?'corr': x<12?'meet':'brk';
+const TRUE={desk:80,corr:40,meet:48,brk:32};
+let tool='desk'; const paint=Array.from({length:H},()=>Array(W).fill(null));
+
+const tools=$('#tools');
+[...Object.keys(Z),'erase'].forEach(k=>{
+  const b=document.createElement('button');b.className='tool';b.dataset.k=k;b.setAttribute('aria-pressed',k===tool);
+  b.innerHTML=k==='erase'?'<span class="sw" style="background:var(--panel)"></span>Eraser':`<span class="sw" style="background:var(${Z[k].v})"></span>${Z[k].name}`;
+  b.onclick=()=>{tool=k;tools.querySelectorAll('.tool').forEach(t=>t.setAttribute('aria-pressed',t.dataset.k===k))};
+  tools.appendChild(b);
+});
+
+/* ---------- Plan drawing ---------- */
+const plan=$('#plan');
+const gFill=el('g',{},plan), gGrid=el('g',{},plan), gFurn=el('g',{'pointer-events':'none'},plan), gWall=el('g',{'pointer-events':'none'},plan), gLab=el('g',{'pointer-events':'none'},plan);
+const cells=[];
+for(let y=0;y<H;y++){cells[y]=[];for(let x=0;x<W;x++){cells[y][x]=el('rect',{x:x*C,y:y*C,width:C,height:C,fill:'var(--panel)'},gFill)}}
+for(let i=0;i<=W;i++)el('line',{x1:i*C,y1:0,x2:i*C,y2:H*C,stroke:'var(--grid)','stroke-width':1},gGrid);
+for(let j=0;j<=H;j++)el('line',{x1:0,y1:j*C,x2:W*C,y2:j*C,stroke:'var(--grid)','stroke-width':1},gGrid);
+
+function furniture(g,withNums){
+  const fs={fill:'var(--furn)',stroke:'var(--furn-line)','stroke-width':1.3};
+  let n=1; const desks=[];
+  for(const cx of [1,11]) for(const [y,cy] of [[1.0,0.62],[1.8,2.98]]) for(let k=0;k<5;k++){
+    const x=cx+k*1.6; desks.push({n,x,y,cy});
+    el('rect',{x:x*C,y:y*C,width:1.6*C,height:.8*C,...fs},g);
+    el('circle',{cx:(x+.8)*C,cy:cy*C,r:.24*C,...fs},g);
+    if(withNums){const t=el('text',{x:(x+.8)*C,y:(y+.55)*C,'text-anchor':'middle','font-size':9.5,'font-family':'IBM Plex Mono, monospace',fill:'var(--muted)'},g);t.textContent='D'+n}
+    n++;
+  }
+  return desks;
+}
+furniture(gFurn,true);
+const fs={fill:'var(--furn)',stroke:'var(--furn-line)','stroke-width':1.3};
+el('rect',{x:.6*C,y:7.3*C,width:3.6*C,height:1.4*C,rx:5,...fs},gFurn);
+for(let k=0;k<4;k++)for(const cy of [6.95,9.05])el('circle',{cx:(1.05+k*.9)*C,cy:cy*C,r:.22*C,...fs},gFurn);
+for(const fx of [6,9]){el('rect',{x:(fx+.6)*C,y:8.7*C,width:1.8*C,height:.8*C,...fs},gFurn);el('circle',{cx:(fx+1.5)*C,cy:8.3*C,r:.22*C,...fs},gFurn)}
+for(const tx of [14,17]){el('circle',{cx:tx*C,cy:8*C,r:.6*C,...fs},gFurn);for(const [dx,dy] of [[-.95,0],[.95,0],[0,-.95],[0,.95]])el('circle',{cx:(tx+dx)*C,cy:(8+dy)*C,r:.2*C,...fs},gFurn)}
+el('rect',{x:19.3*C,y:6.4*C,width:.7*C,height:3.4*C,...fs},gFurn);
+
+const ws={stroke:'var(--wall)','stroke-linecap':'square',fill:'none'};
+el('path',{d:`M0 ${4.5*C} V0 H${W*C} V${H*C} H0 V${5.5*C}`,'stroke-width':6,...ws},gWall);
+el('line',{x1:0,y1:4.5*C,x2:C,y2:4.5*C,stroke:'var(--wall)','stroke-width':1.5},gWall);
+el('path',{d:`M${C} ${4.5*C} A${C} ${C} 0 0 1 0 ${5.5*C}`,fill:'none',stroke:'var(--wall)','stroke-width':1,'stroke-dasharray':'3 3'},gWall);
+for(const [a,b] of [[0,4.5],[5.5,7],[8,10],[11,12]])el('line',{x1:a*C,y1:6*C,x2:b*C,y2:6*C,'stroke-width':4,...ws},gWall);
+for(const vx of [6,9,12])el('line',{x1:vx*C,y1:6*C,x2:vx*C,y2:H*C,'stroke-width':4,...ws},gWall);
+for(const a of [4.5,7,10]){el('line',{x1:a*C,y1:6*C,x2:a*C,y2:7*C,stroke:'var(--wall)','stroke-width':1.5},gWall);el('path',{d:`M${a*C} ${7*C} A${C} ${C} 0 0 0 ${(a+1)*C} ${6*C}`,fill:'none',stroke:'var(--wall)','stroke-width':1,'stroke-dasharray':'3 3'},gWall)}
+const lab=(x,y,t,s=11)=>{const e=el('text',{x:x*C,y:y*C,'text-anchor':'middle','font-size':s,'font-weight':600,'font-family':'IBM Plex Sans, Arial, sans-serif',fill:'var(--ink)'},gLab);e.textContent=t};
+lab(10,5.15,'Corridor',12); lab(3,9.75,'Meeting room (8 seats)'); lab(7.5,7.55,'Focus'); lab(7.5,7.95,'room'); lab(10.5,7.55,'Focus'); lab(10.5,7.95,'room'); lab(15.5,9.75,'Break-out / kitchen');
+
+/* painting */
+function setCell(x,y){
+  const v=tool==='erase'?null:tool; if(paint[y][x]===v)return;
+  paint[y][x]=v; cells[y][x].setAttribute('fill',v?`var(${Z[v].v})`:'var(--panel)'); updateAreas();
+}
+function cellAt(ev){
+  const pt=plan.createSVGPoint();pt.x=ev.clientX;pt.y=ev.clientY;
+  const p=pt.matrixTransform(plan.getScreenCTM().inverse());
+  const x=Math.floor(p.x/C),y=Math.floor(p.y/C);
+  return (x>=0&&x<W&&y>=0&&y<H)?[x,y]:null;
+}
+let down=false;
+plan.addEventListener('pointerdown',e=>{down=true;plan.setPointerCapture(e.pointerId);const c=cellAt(e);if(c)setCell(...c)});
+plan.addEventListener('pointermove',e=>{if(!down)return;const c=cellAt(e);if(c)setCell(...c)});
+['pointerup','pointercancel'].forEach(t=>plan.addEventListener(t,()=>down=false));
+
+const areaTable=$('#areaTable');
+function updateAreas(){
+  const cnt={desk:0,corr:0,meet:0,brk:0};let tot=0;
+  paint.forEach(r=>r.forEach(v=>{if(v){cnt[v]++;tot++}}));
+  areaTable.innerHTML=Object.keys(Z).map(k=>`<tr><td><span class="dot" style="background:var(${Z[k].v})"></span>${Z[k].name}</td><td>${cnt[k]} m²</td></tr>`).join('')+
+    `<tr class="total"><td>Coloured so far</td><td>${tot} / 200 m²</td></tr>`;
+}
+updateAreas();
+window.__lab=window.__lab||{};window.__lab.smallPaint=()=>paint.flat().filter(Boolean).length;
+
+$('#clearPaint').onclick=()=>{for(let y=0;y<H;y++)for(let x=0;x<W;x++){paint[y][x]=null;cells[y][x].setAttribute('fill','var(--panel)')}updateAreas();$('#paintMsg').innerHTML=''};
+$('#checkPaint').onclick=()=>{
+  let ok=0,blank=0;
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){if(!paint[y][x])blank++;else if(paint[y][x]===truth(x,y))ok++}
+  const m=$('#paintMsg');
+  if(ok===200)m.innerHTML='<div class="msg ok">All 200 squares are in the right zone. Now use your zone areas for the calculations.</div>';
+  else m.innerHTML=`<div class="msg ${blank?'info':'bad'}">${ok} of 200 squares are in the right zone${blank?`, ${blank} are not coloured yet`:''}. Tip: the corridor is the 2 m strip between the desks and the rooms, and the break-out area has no wall to the corridor.</div>`;
+};
+
+/* questions */
+const Q=[
+  {id:'nia',ans:'80 + 40 + 48 + 32 = <b>200 m²</b>',l:'Net Internal Area (NIA)',u:'m²',a:200,t:.5,what:'All the floor space inside the walls, including corridors.',how:'Add up your four zone areas: <code>desk + corridor + meeting &amp; focus + break-out</code>'},
+  {id:'nua',ans:'200 − 40 = <b>160 m²</b>',l:'Net Usable Area (NUA)',u:'m²',a:160,t:.5,what:'The space you can actually put desks, rooms or furniture in. Main corridors do not count, because people need to walk through them.',how:'<code>NIA − corridor</code>'},
+  {id:'mpd',ans:'200 ÷ 20 = <b>10 m² per desk</b>',l:'m² per desk',u:'',a:10,t:.06,what:'How much floor space each desk takes up.',how:'<code>NIA ÷ 20 desks</code>'},
+  {id:'mpp',ans:'200 ÷ 30 = <b>6.7 m² per person</b>',l:'m² per person',u:'',a:200/30,t:.08,what:'How much floor space each member of staff has.',how:'<code>NIA ÷ 30 staff</code> (round to 1 decimal place)'},
+  {id:'dsr',ans:'30 ÷ 20 = <b>1.5 : 1</b>',l:'Desk sharing ratio',u:': 1',a:1.5,t:.03,what:'How many people share each desk. 1 : 1 means everyone has their own desk.',how:'<code>staff ÷ desks</code>, then write the answer as ___ : 1',ratio:true},
+  {id:'sup',ans:'(48 + 32) ÷ 200 × 100 = <b>40%</b>',l:'Support space',u:'%',a:40,t:.6,what:'The share of the floor used for things other than desks.',how:'<code>(meeting &amp; focus rooms + break-out) ÷ NIA × 100</code>'},
+  {id:'bench',ans:'10 m² per desk is inside 10–12, so <b>about right</b>',l:'Compared with the benchmark, this floor is…',sel:['tight','about right','generous'],a:'about right',what:'Lecture 2a: a typical office has 10–12 m² NIA per desk.',how:'Look at your m² per desk. Below 10 = tight · 10–12 = about right · above 12 = generous'}
+];
+const qs=$('#qs');
+qs.innerHTML=Q.map(q=>`<div class="q" id="q-${q.id}"><label for="in-${q.id}">${q.l}</label>${q.sel?`<select id="in-${q.id}"><option value="">Choose…</option>${q.sel.map(o=>`<option>${o}</option>`).join('')}</select>`:`<span class="row" style="gap:6px;flex-wrap:nowrap"><input id="in-${q.id}" inputmode="decimal" autocomplete="off"><span style="font-family:var(--f-mono);font-size:13px;color:var(--muted);min-width:24px">${q.u}</span></span>`}<div class="how"><span class="what">${q.what}</span></div><div class="fb"></div></div>`).join('');
+const num=(s,ratio)=>{s=String(s).trim().replace(/,/g,'.').replace(/[^\d.:\/]/g,'');if(!s)return NaN;const m=s.split(/[:\/]/);if(m.length===2&&m[1]!==''){const a=+m[0],b=+m[1];return ratio&&b===1?a:a/b}return +m[0]};
+window.__lab=window.__lab||{};window.__lab.small=()=>Q.map(q=>{const v=$('#in-'+q.id).value;return{l:q.l,v,ok:v!==''&&(q.sel?v===q.a:Math.abs(num(v,q.ratio)-q.a)<=q.t)}});
+$('#checkQs').onclick=()=>{
+  let right=0;
+  Q.forEach(q=>{
+    const box=$('#q-'+q.id),v=$('#in-'+q.id).value,fb=box.querySelector('.fb');box.classList.remove('ok','bad');
+    if(v===''){fb.textContent='';return}
+    const good=q.sel?v===q.a:Math.abs(num(v,q.ratio)-q.a)<=q.t;
+    box.classList.add(good?'ok':'bad');fb.textContent=good?'Correct':'Not yet. Check your zone areas and the formula.';if(good)right++;
+  });
+  $('#qsMsg').innerHTML=right===Q.length?'<div class="msg ok">All correct. Notice that 30 staff share 20 desks: m² per person looks tight, m² per desk looks fine. Which one tells the real story? You need use data to know.</div>':`<div class="msg info">${right} of ${Q.length} correct so far.</div>`;
+};
+
+
+
+/* answer reveal: two-step so it is not opened by accident */
+function twoStep(btn,label,confirmLabel,onShow,onHide,hideLabel='Hide answers'){let st=0;btn.onclick=()=>{
+  if(st===0){st=1;btn.textContent=confirmLabel;setTimeout(()=>{if(st===1){st=0;btn.textContent=label}},4000)}
+  else if(st===1){st=2;onShow();btn.textContent=hideLabel}
+  else{st=0;onHide();btn.textContent=label}}}
+let saved=null;
+if($('#showZones'))twoStep($('#showZones'),'Show correct zones','Sure? Click again to show',
+  ()=>{saved=paint.map(r=>r.slice());for(let y=0;y<H;y++)for(let x=0;x<W;x++){const v=truth(x,y);paint[y][x]=v;cells[y][x].setAttribute('fill',`var(${Z[v].v})`)}updateAreas()},
+  ()=>{for(let y=0;y<H;y++)for(let x=0;x<W;x++){const v=saved[y][x];paint[y][x]=v;cells[y][x].setAttribute('fill',v?`var(${Z[v].v})`:'var(--panel)')}updateAreas()},'Back to my colouring');
+
+/* ---------- PART 2 ---------- */
+const TIMES=['10:00','12:00','14:00'];
+function mk(seed,nO,nS){let s=seed;const r=()=>(s=(s*16807)%2147483647)/2147483647;const idx=[...Array(20).keys()];for(let i=19;i>0;i--){const j=Math.floor(r()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]]}const a=Array(20).fill('E');idx.slice(0,nO).forEach(i=>a[i]='O');idx.slice(nO,nO+nS).forEach(i=>a[i]='S');return a}
+const REAL=[mk(11,9,3),mk(29,5,7),mk(47,13,2)];
+const rec=TIMES.map(()=>Array(20).fill(null));
+let cur=0;
+
+const times=$('#times');
+TIMES.forEach((t,i)=>{const b=document.createElement('button');b.className='time';b.dataset.i=i;b.onclick=()=>{cur=i;render2()};times.appendChild(b)});
+
+const scene=$('#scene');
+el('rect',{x:0,y:0,width:W*C,height:4*C,fill:'var(--z-desk)',opacity:.35},scene);
+for(let i=0;i<=W;i++)el('line',{x1:i*C,y1:0,x2:i*C,y2:4*C,stroke:'var(--grid)'},scene);
+for(let j=0;j<=4;j++)el('line',{x1:0,y1:j*C,x2:W*C,y2:j*C,stroke:'var(--grid)'},scene);
+el('path',{d:`M0 ${4*C} V0 H${W*C} V${4*C}`,fill:'none',stroke:'var(--wall)','stroke-width':5},scene);
+el('line',{x1:0,y1:4*C,x2:W*C,y2:4*C,stroke:'var(--furn-line)','stroke-dasharray':'5 4'},scene);
+const desks=[];
+(()=>{let n=0;for(const cx of [1,11])for(const [y,cy] of [[1.0,0.62],[1.8,2.98]])for(let k=0;k<5;k++){const x=cx+k*1.6;const g=el('g',{tabindex:0,role:'button','data-n':n,style:'cursor:pointer'},scene);
+  el('rect',{x:x*C-2,y:Math.min(y,cy-.3)*C-2,width:1.6*C+4,height:(Math.abs(cy-y)+1.1)*C,fill:'transparent'},g);
+  const dr=el('rect',{x:x*C,y:y*C,width:1.6*C,height:.8*C,fill:'var(--furn)',stroke:'var(--furn-line)','stroke-width':1.3},g);
+  el('circle',{cx:(x+.8)*C,cy:cy*C,r:.24*C,fill:'var(--furn)',stroke:'var(--furn-line)','stroke-width':1.3},g);
+  const ppl=el('g',{},g); const tag=el('text',{x:(x+.8)*C,y:(y+.55)*C,'text-anchor':'middle','font-size':9,'font-family':'IBM Plex Mono, monospace',fill:'var(--muted)'},g);
+  desks.push({g,dr,ppl,tag,x,y,cy,n});const idx=n;g.addEventListener('click',()=>cycle(cur,idx));g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();cycle(cur,idx)}});n++}})();
+
+function drawScene(){
+  const st=REAL[cur];
+  desks.forEach(d=>{
+    d.ppl.innerHTML='';const s=st[d.n],cx=(d.x+.8)*C,up=d.cy<d.y;
+    if(s==='O'){const hy=d.cy*C;el('circle',{cx,cy:hy,r:6.5,fill:'var(--occ)'},d.ppl);el('path',{d:`M${cx-10} ${hy+(up?12:-12)} q10 ${up?-12:12} 20 0`,fill:'var(--occ)',transform:''},d.ppl)}
+    if(s==='S'){el('rect',{x:cx-10,y:(d.y+.12)*C,width:12,height:9,rx:1.5,fill:'var(--sol)'},d.ppl);el('rect',{x:cx+5,y:(d.y+.1)*C,width:6,height:12,rx:1.5,fill:'var(--sol)',opacity:.7},d.ppl)}
+    const r=rec[cur][d.n];d.tag.textContent=r?r:'D'+(d.n+1);d.tag.setAttribute('fill',r==='O'?'var(--occ)':r==='S'?'var(--sol)':'var(--muted)');d.tag.setAttribute('font-weight',r?700:400);
+    if(s!=='E'){d.tag.setAttribute('y',(d.y+(up?.62:.62))*C);d.tag.setAttribute('x',cx+(s==='S'?0:0))}
+    d.dr.setAttribute('stroke',r?'var(--accent)':'var(--furn-line)');d.dr.setAttribute('stroke-width',r?2:1.3);
+  });
+  // move tag off icons for signs of life
+  desks.forEach(d=>{if(REAL[cur][d.n]==='S'){d.tag.setAttribute('x',(d.x+1.3)*C)}else d.tag.setAttribute('x',(d.x+.8)*C)});
+}
+const ORDER=[null,'O','S','E'];
+let mode='O';
+const MODE_TXT={O:'Now recording: O occupied',S:'Now recording: S signs of life',E:'Now recording: E empty','':'Now erasing records'};
+function setMode(m){mode=m;document.querySelectorAll('.mode').forEach(b=>b.setAttribute('aria-checked',b.dataset.m===m));$('#modeNow').textContent='('+MODE_TXT[m]+')'}
+document.querySelectorAll('.mode').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
+setMode('O');
+function cycle(t,n){rec[t][n]=mode||null;render2()}
+
+const sheet=$('#sheet');
+function drawSheet(){
+  let h='<tr><th>Desk</th>'+TIMES.map((t,i)=>`<th class="${i===cur?'cur':''}">${t}</th>`).join('')+'</tr>';
+  for(let n=0;n<20;n++){h+=`<tr><td class="d">D${n+1}</td>`+TIMES.map((t,i)=>{const r=rec[i][n];return `<td class="${i===cur?'cur':''}"><button class="cellbtn ${r||''}" data-t="${i}" data-n="${n}" aria-label="D${n+1} at ${t}: ${r||'not recorded'}">${r||'·'}</button></td>`}).join('')+'</tr>'}
+  h+='<tr><th>Recorded</th>'+TIMES.map((t,i)=>`<th>${rec[i].filter(Boolean).length}/20</th>`).join('')+'</tr>';
+  sheet.innerHTML=h;
+  sheet.querySelectorAll('.cellbtn').forEach(b=>b.onclick=()=>{cur=+b.dataset.t;cycle(+b.dataset.t,+b.dataset.n)});
+}
+const pct=v=>Math.round(v*100)+'%';
+function util(arr,sol){return arr.filter(s=>s==='O'||(sol&&s==='S')).length/20}
+function drawResults(){
+  const sol=$('#solToggle').checked;
+  const done=rec.map(r=>r.every(Boolean));
+  const u=rec.map((r,i)=>done[i]?util(r,sol):null);
+  $('#bars').innerHTML=u.map(v=>`<div class="bar"><span class="v">${v==null?'–':pct(v)}</span><div class="b" style="height:${v==null?0:v*100}%"></div></div>`).join('');
+  if(done.every(Boolean)){
+    const avg=u.reduce((a,b)=>a+b,0)/TIMES.length,peak=Math.max(...u);
+    $('#avgU').textContent=pct(avg);$('#peakU').textContent=pct(peak);$('#need').textContent=Math.ceil(peak/.8*20-1e-9)+' desks';
+  }else{$('#avgU').textContent='–';$('#peakU').textContent='–';$('#need').textContent='–'}
+  times.querySelectorAll('.time').forEach((b,i)=>{b.setAttribute('aria-pressed',i===cur);b.innerHTML=`${TIMES[i]}<small>${rec[i].filter(Boolean).length}/20</small>`});
+}
+function render2(){drawScene();drawSheet();drawResults()}
+$('#solToggle').onchange=drawResults;
+$('#fillRound').onclick=()=>{rec[cur]=rec[cur].map(r=>r||'E');render2()};
+$('#clearRound').onclick=()=>{rec[cur]=Array(20).fill(null);render2()};
+$('#checkObs').onclick=()=>{
+  const sol=$('#solToggle').checked;let wrong=0,blank=0;
+  rec.forEach((r,i)=>r.forEach((v,n)=>{if(!v)blank++;else if(v!==REAL[i][n])wrong++}));
+  const tu=REAL.map(r=>util(r,sol)),tavg=tu.reduce((a,b)=>a+b,0)/TIMES.length,tpeak=Math.max(...tu);
+  const m=$('#obsMsg');
+  if(blank){m.innerHTML=`<div class="msg info">${blank} desk observations are still missing. Finish all three times first.</div>`;return}
+  m.innerHTML=`<div class="msg ${wrong?'bad':'ok'}">${wrong?`${wrong} of 60 observations differ from the true count, so your results are off. Garbage in, garbage out.`:'All 60 observations match the true count.'} True values${sol?' (signs of life counted as used)':' (occupied only)'}: average ${pct(tavg)}, peak ${pct(tpeak)}, ${Math.ceil(tpeak/.8*20-1e-9)} desks needed. Now flip the “signs of life” switch and see how much the answer moves.</div>`;
+};
+render2();
+window.__lab=window.__lab||{};
+window.__lab.count=()=>{const sol=$('#solToggle').checked;let wrong=0,blank=0;
+  rec.forEach((r,i)=>r.forEach((v,n)=>{if(!v)blank++;else if(v!==REAL[i][n])wrong++}));
+  const done=rec.map(r=>r.every(Boolean));const u=rec.map((r,i)=>done[i]?util(r,sol):null);
+  const all=done.every(Boolean);const avg=all?u.reduce((a,b)=>a+b,0)/TIMES.length:null,peak=all?Math.max(...u):null;
+  return{sol,recorded:60-blank,wrong,perTime:TIMES.map((t,i)=>t+' '+(u[i]==null?'–':pct(u[i]))).join(', '),avg:avg==null?'–':pct(avg),peak:peak==null?'–':pct(peak),need:peak==null?'–':Math.ceil(peak/.8*20-1e-9)}};
+
+/* tabs */
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===t));['p1','p1b','p2','p4'].forEach(id=>$('#'+id).hidden=t.dataset.tab!==id)});
+})();
+</script>
+<script>
+(()=>{
+const NS='http://www.w3.org/2000/svg', C=24, W=30, H=20, N=W*H;
+const $=s=>document.querySelector(s);
+const el=(t,a={},p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e};
+
+const Z={
+  ws:{name:'Workstations',v:'--z-desk'},
+  corr:{name:'Primary circulation (main corridor)',v:'--z-corr'},
+  meet:{name:'Meeting & focus rooms',v:'--z-meet'},
+  brk:{name:'Break-out / kitchen',v:'--z-break'},
+  sup:{name:'Support (print, storage, IT, lockers)',v:'--z-sup'},
+  core:{name:'Core (lifts, stairs, WCs, risers)',v:'--z-core'}
+};
+function truth(x,y){
+  if(x>=9&&x<21&&y>=7&&y<14)return'core';
+  if(x>=7&&x<23&&y>=5&&y<16)return'corr';
+  if(x>=23&&y>=9&&y<11)return'corr';
+  if(y<5)return x<22?'ws':'meet';
+  if(y>=16)return x<5?'sup':x<17?'brk':'meet';
+  if(x<7)return'ws';
+  return y<9?'sup':'ws';
+}
+let tool='ws'; const paint=Array.from({length:H},()=>Array(W).fill(null));
+
+const tools=$('#tools2');
+[...Object.keys(Z),'erase'].forEach(k=>{
+  const b=document.createElement('button');b.className='tool';b.dataset.k=k;b.setAttribute('aria-pressed',k===tool);
+  b.innerHTML=k==='erase'?'<span class="sw" style="background:var(--panel)"></span>Eraser':`<span class="sw" style="background:var(${Z[k].v})"></span>${Z[k].name}`;
+  b.onclick=()=>{tool=k;tools.querySelectorAll('.tool').forEach(t=>t.setAttribute('aria-pressed',t.dataset.k===k))};
+  tools.appendChild(b);
+});
+
+const plan=$('#plan2');
+const gFill=el('g',{},plan), gGrid=el('g',{},plan), gFurn=el('g',{'pointer-events':'none'},plan), gWall=el('g',{'pointer-events':'none'},plan), gLab=el('g',{'pointer-events':'none'},plan);
+const cells=[];
+for(let y=0;y<H;y++){cells[y]=[];for(let x=0;x<W;x++)cells[y][x]=el('rect',{x:x*C,y:y*C,width:C,height:C,fill:'var(--panel)'},gFill)}
+for(let i=0;i<=W;i++)el('line',{x1:i*C,y1:0,x2:i*C,y2:H*C,stroke:'var(--grid)'},gGrid);
+for(let j=0;j<=H;j++)el('line',{x1:0,y1:j*C,x2:W*C,y2:j*C,stroke:'var(--grid)'},gGrid);
+
+/* furniture */
+const fs={fill:'var(--furn)',stroke:'var(--furn-line)','stroke-width':1.1};
+const R=(x,y,w,h,extra={})=>el('rect',{x:x*C,y:y*C,width:w*C,height:h*C,...fs,...extra},gFurn);
+const chair=(x,y,r=.22)=>el('circle',{cx:x*C,cy:y*C,r:r*C,...fs},gFurn);
+let dn=1;const num=(x,y)=>{const t=el('text',{x:x*C,y:y*C+3,'text-anchor':'middle','font-size':7,'font-family':'IBM Plex Mono, monospace',fill:'var(--muted)'},gFurn);t.textContent=dn++};
+// north co-working: 2 long shared tables, 12 seats each, no screens
+for(const tx of [0.8,11.4]){R(tx,1.6,10.1,1.4,{rx:6});for(let k=0;k<6;k++){const sx=tx+.84+k*1.68;chair(sx,1.2);chair(sx,3.4);num(sx,1.9);num(sx,2.7)}}
+// fixed desks in cubicles: each desk boxed in by screens
+const screen=(x1,y1,x2,y2)=>el('line',{x1:x1*C,y1:y1*C,x2:x2*C,y2:y2*C,stroke:'var(--furn-line)','stroke-width':2.2,'stroke-linecap':'round'},gFurn);
+function cubicles(bx,y0,rows){
+  for(const [x,cx] of [[bx,bx-.38],[bx+.8,bx+1.98]])for(let k=0;k<rows;k++){const y=y0+k*1.6;R(x,y,.8,1.6);chair(cx,y+.8);num(x+.4,y+.8)}
+  screen(bx+.8,y0,bx+.8,y0+rows*1.6);
+  for(let k=0;k<=rows;k++)screen(bx-.62,y0+k*1.6,bx+2.22,y0+k*1.6);
+}
+// west: 2 blocks of 2 x 6 cubicles
+for(const bx of [0.9,4.1])cubicles(bx,5.3,6);
+// east: 2 blocks of 2 x 3 cubicles
+for(const bx of [24.2,27.4])cubicles(bx,11.15,3);
+// storage units lining the corridor edge (part of the workstation zone)
+for(const [a,b] of [[0.3,5.5],[6.5,11],[12,16.5],[17.5,21.6]])R(a,4.45,b-a,.5,{fill:'var(--line)'});
+
+// boardroom
+R(23.6,1.8,4.8,1.4,{rx:5});for(let k=0;k<6;k++){chair(24.0+k*.8,1.45);chair(24.0+k*.8,3.55)}chair(23.2,2.5);chair(28.8,2.5);
+// comms racks, lockers
+for(let k=0;k<3;k++)R(23.4+k*.85,5.4,.65,1.1,{fill:'var(--line)'});
+for(let k=0;k<6;k++)R(26.2+k*.6,5.15,.55,.6);
+// print & storage
+R(.3,16.4,1.4,.8);R(.3,19.1,4.4,.6);R(3.2,16.3,1.5,.6);
+// break-out
+for(const tx of [7.5,10.5,13.5]){el('circle',{cx:tx*C,cy:17.6*C,r:.55*C,...fs},gFurn);for(const [dx,dy] of [[-.9,0],[.9,0],[0,-.9],[0,.9]])chair(tx+dx,17.6+dy,.18)}
+R(5.4,19.3,6.6,.6);
+// booths
+for(const bx of [17,19]){R(bx+.3,18.9,1.4,.7);chair(bx+1,18.4)}
+// meeting rooms
+R(21.9,17.4,2.2,1.2,{rx:4});for(const [x,y] of [[22.4,17],[23.6,17],[22.4,19],[23.6,19]])chair(x,y);
+R(26.2,17.4,2.8,1.2,{rx:4});for(const [x,y] of [[26.7,17],[27.6,17],[28.5,17],[26.7,19],[27.6,19],[28.5,19]])chair(x,y);
+// core contents: lifts with cross, stairs with treads
+for(const lx of [12,14,16]){R(lx+.15,11.65,1.7,2.2);el('path',{d:`M${(lx+.15)*C} ${11.65*C} L${(lx+1.85)*C} ${13.85*C} M${(lx+1.85)*C} ${11.65*C} L${(lx+.15)*C} ${13.85*C}`,stroke:'var(--furn-line)','stroke-width':1},gFurn)}
+for(const [sx,sy,sh] of [[9,7,4],[18,11,3]])for(let k=1;k<sh*3;k++)el('line',{x1:(sx+.2)*C,y1:(sy+k/3)*C,x2:(sx+1.4)*C,y2:(sy+k/3)*C,stroke:'var(--furn-line)','stroke-width':.8},gFurn);
+for(const [sx,sy,sh] of [[9,7,4],[18,11,3]])for(let k=1;k<sh*3;k++)el('line',{x1:(sx+1.6)*C,y1:(sy+k/3)*C,x2:(sx+2.8)*C,y2:(sy+k/3)*C,stroke:'var(--furn-line)','stroke-width':.8},gFurn);
+
+/* walls */
+const wall=(x1,y1,x2,y2,w=3)=>el('line',{x1:x1*C,y1:y1*C,x2:x2*C,y2:y2*C,stroke:'var(--wall)','stroke-width':w,'stroke-linecap':'square'},gWall);
+// segment with gaps on an axis-aligned line
+function seg(x1,y1,x2,y2,gaps=[],w=3){
+  const horiz=y1===y2;let a=horiz?x1:y1;const end=horiz?x2:y2;
+  for(const [g1,g2] of gaps.sort((p,q)=>p[0]-q[0])){if(g1>a)horiz?wall(a,y1,g1,y1,w):wall(x1,a,x1,g1,w);a=g2}
+  if(end>a)horiz?wall(a,y1,end,y1,w):wall(x1,a,x1,end,w);
+}
+el('rect',{x:0,y:0,width:W*C,height:H*C,fill:'none',stroke:'var(--wall)','stroke-width':6},gWall);
+// core outline (thick) with doors
+seg(9,7,21,7,[[13,14],[16,17],[19,20]],5);           // north: WC doors
+seg(9,14,21,14,[[12.3,13.7],[14.3,15.7],[16.3,17.7]],5); // south: lift doors
+seg(9,7,9,14,[[8,9],[12,13]],5);                     // west: stair A, cleaner
+seg(21,7,21,14,[[12,13]],5);                         // east: stair B
+// core internal
+wall(12,7,12,14);wall(15,7,15,11.5);wall(18,7,18,14);wall(12,11.5,18,11.5);wall(9,11,12,11);wall(18,9.5,21,9.5);wall(18,11,21,11);
+// boardroom
+wall(22,0,22,5);seg(22,5,30,5,[[22,23]]);
+// comms room
+seg(23,5,23,9,[[6.6,7.6]]);wall(23,9,26,9);wall(26,5,26,9);
+// booths + meeting rooms
+wall(17,16,17,20);wall(19,16,19,20);wall(21,16,21,20);wall(25,16,25,20);
+seg(17,16,30,16,[[17.5,18.5],[19.5,20.5],[22,23],[26,27]]);
+
+/* dashed edge of the main corridor where there is no wall */
+const dash=(x1,y1,x2,y2)=>el('line',{x1:x1*C,y1:y1*C,x2:x2*C,y2:y2*C,stroke:'var(--ink)','stroke-width':1.4,'stroke-dasharray':'6 4'},gWall);
+dash(7,5,7,16);dash(7,5,22,5);dash(7,16,17,16);dash(23,11,23,16);dash(23,11,30,11);dash(26,9,30,9);
+/* labels */
+const lab=(x,y,t,s=9.5,w=600)=>{const e=el('text',{x:x*C,y:y*C,'text-anchor':'middle','font-size':s,'font-weight':w,'font-family':'IBM Plex Sans, Arial, sans-serif',fill:'var(--ink)'},gLab);e.textContent=t};
+lab(11.15,.75,'Co-working · shared tables',9.5);lab(3.55,15.6,'Fixed desks (cubicles)',8.5);lab(15,6.25,'Main corridor',11);lab(26.5,10.15,'Corridor',10);lab(15,15.25,'Main corridor',11);
+lab(10.5,10.6,'Stairs');lab(10.5,12.75,'Cleaner',8.5);lab(13.5,9.4,'WC (M)');lab(16.5,9.4,'WC (F)');lab(19.5,8.4,'Acc. WC',8.5);lab(19.5,10.4,'Riser',8.5);lab(19.5,12.7,'Stairs');
+lab(26,4.6,'Boardroom (14)');lab(24.5,8.6,'IT room',8.5);lab(28,7.3,'Lockers',8.5);
+lab(2.5,18.6,'Print & store',9);lab(11,19.05,'Break-out / kitchen');lab(18,16.85,'Phone',8);lab(18,17.25,'room',8);lab(20,16.85,'Phone',8);lab(20,17.25,'room',8);lab(23,19.75,'Meeting (4)',8.5);lab(27.5,19.75,'Meeting (6)',8.5);
+
+/* painting */
+function setCell(x,y){const v=tool==='erase'?null:tool;if(paint[y][x]===v)return;paint[y][x]=v;cells[y][x].setAttribute('fill',v?`var(${Z[v].v})`:'var(--panel)');updateAreas()}
+function cellAt(ev){const pt=plan.createSVGPoint();pt.x=ev.clientX;pt.y=ev.clientY;const p=pt.matrixTransform(plan.getScreenCTM().inverse());const x=Math.floor(p.x/C),y=Math.floor(p.y/C);return(x>=0&&x<W&&y>=0&&y<H)?[x,y]:null}
+let down=false;
+plan.addEventListener('pointerdown',e=>{down=true;plan.setPointerCapture(e.pointerId);const c=cellAt(e);if(c)setCell(...c)});
+plan.addEventListener('pointermove',e=>{if(!down)return;const c=cellAt(e);if(c)setCell(...c)});
+['pointerup','pointercancel'].forEach(t=>plan.addEventListener(t,()=>down=false));
+
+const areaTable=$('#areaTable2');
+function updateAreas(){
+  const cnt={};Object.keys(Z).forEach(k=>cnt[k]=0);let tot=0;
+  paint.forEach(r=>r.forEach(v=>{if(v){cnt[v]++;tot++}}));
+  areaTable.innerHTML=Object.keys(Z).map(k=>`<tr><td><span class="dot" style="background:var(${Z[k].v})"></span>${Z[k].name}</td><td>${cnt[k]} m²</td></tr>`).join('')+`<tr class="total"><td>Coloured so far</td><td>${tot} / ${N} m²</td></tr>`;
+}
+updateAreas();
+window.__lab=window.__lab||{};window.__lab.towerPaint=()=>paint.flat().filter(Boolean).length;
+const fill=v=>v?`var(${Z[v].v})`:'var(--panel)';
+$('#clearPaint2').onclick=()=>{for(let y=0;y<H;y++)for(let x=0;x<W;x++){paint[y][x]=null;cells[y][x].setAttribute('fill',fill(null))}updateAreas();$('#paintMsg2').innerHTML=''};
+$('#checkPaint2').onclick=()=>{
+  let ok=0,blank=0;for(let y=0;y<H;y++)for(let x=0;x<W;x++){if(!paint[y][x])blank++;else if(paint[y][x]===truth(x,y))ok++}
+  $('#paintMsg2').innerHTML=ok===N?`<div class="msg ok">All ${N} squares are in the right zone. Now use your zone areas for the calculations.</div>`:
+  `<div class="msg ${blank?'info':'bad'}">${ok} of ${N} squares are in the right zone${blank?`, ${blank} are not coloured yet`:''}. Tips: the core is the whole thick-walled block in the middle, including the lifts. The main corridor is the 2 m ring around the core plus the branch to the east, inside the dashed lines. Storage units, co-working tables and fixed-desk cubicles all belong to the workstation zone.</div>`;
+};
+let saved=null,st=0;const zb=$('#showZones2');
+if(zb)zb.onclick=()=>{
+  if(st===0){st=1;zb.textContent='Sure? Click again to show';setTimeout(()=>{if(st===1){st=0;zb.textContent='Show correct zones'}},4000)}
+  else if(st===1){st=2;saved=paint.map(r=>r.slice());for(let y=0;y<H;y++)for(let x=0;x<W;x++){paint[y][x]=truth(x,y);cells[y][x].setAttribute('fill',fill(paint[y][x]))}updateAreas();zb.textContent='Back to my colouring'}
+  else{st=0;for(let y=0;y<H;y++)for(let x=0;x<W;x++){paint[y][x]=saved[y][x];cells[y][x].setAttribute('fill',fill(paint[y][x]))}updateAreas();zb.textContent='Show correct zones'}
+};
+
+/* questions */
+const Q=[
+  {id:'gia',l:'Gross Internal Area (GIA)',u:'m²',a:600,t:.5,what:'All the floor inside the outer walls, including the core.'},
+  {id:'core',l:'Core',u:'m²',a:84,t:.5,what:'The fixed parts of the building: lifts, stairs, toilets and risers. The tenant cannot put desks here.'},
+  {id:'nia',l:'Net Internal Area (NIA)',u:'m²',a:516,t:.5,what:'The floor the tenant can use. It is the GIA without the core.'},
+  {id:'pc',l:'Primary circulation',u:'m²',a:106,t:.5,what:'The main corridors linking the lifts, stairs and rooms, including the branch to the east. They must stay clear.'},
+  {id:'nua',l:'Net Usable Area (NUA)',u:'m²',a:410,t:.5,what:'The space left for desks, rooms and furniture once the core and main corridor are taken out.'},
+  {id:'eff',l:'Building efficiency (NIA as % of GIA)',u:'%',a:86,t:.6,what:'How much of the whole floor the tenant can actually use. Lecture 2a: around 80–85% is a good office floor.'},
+  {id:'mpd',l:'m² per desk (NIA)',u:'',a:516/60,t:.08,what:'How much usable floor there is for each of the 60 desks.'},
+  {id:'dsr',l:'Desk sharing ratio',u:': 1',a:1.25,t:.03,ratio:true,what:'How many of the 75 staff share each desk.'},
+  {id:'sup',l:'Support space (% of NIA)',u:'%',a:188/516*100,t:.6,what:'The share of the NIA used for meeting, break-out and support rooms.'},
+  {id:'bench',l:'Compared with the 10–12 m² per desk benchmark, this floor is…',sel:['tight','about right','generous'],a:'tight',what:'Lecture 2a: a typical office has 10–12 m² NIA per desk.'}
+];
+const qs=$('#qs2');
+qs.innerHTML=Q.map(q=>`<div class="q" id="q2-${q.id}"><label for="in2-${q.id}">${q.l}</label>${q.sel?`<select id="in2-${q.id}"><option value="">Choose…</option>${q.sel.map(o=>`<option>${o}</option>`).join('')}</select>`:`<span class="row" style="gap:6px;flex-wrap:nowrap"><input id="in2-${q.id}" inputmode="decimal" autocomplete="off"><span style="font-family:var(--f-mono);font-size:13px;color:var(--muted);min-width:24px">${q.u}</span></span>`}<div class="how"><span class="what">${q.what}</span></div><div class="fb"></div></div>`).join('');
+const num2=(s,ratio)=>{s=String(s).trim().replace(/,/g,'.').replace(/[^\d.:\/]/g,'');if(!s)return NaN;const m=s.split(/[:\/]/);if(m.length===2&&m[1]!==''){const a=+m[0],b=+m[1];return ratio&&b===1?a:a/b}return +m[0]};
+window.__lab=window.__lab||{};window.__lab.tower=()=>Q.map(q=>{const v=$('#in2-'+q.id).value;return{l:q.l,v,ok:v!==''&&(q.sel?v===q.a:Math.abs(num2(v,q.ratio)-q.a)<=q.t)}});
+$('#checkQs2').onclick=()=>{
+  let right=0;
+  Q.forEach(q=>{const box=$('#q2-'+q.id),v=$('#in2-'+q.id).value,fb=box.querySelector('.fb');box.classList.remove('ok','bad');
+    if(v===''){fb.textContent='';return}
+    const good=q.sel?v===q.a:Math.abs(num2(v,q.ratio)-q.a)<=q.t;
+    box.classList.add(good?'ok':'bad');fb.textContent=good?'Correct':'Not yet. Check your zone areas and what the term includes.';if(good)right++});
+  $('#qsMsg2').innerHTML=right===Q.length?'<div class="msg ok">All correct. Now compare this floor with the small office below.</div>':`<div class="msg info">${right} of ${Q.length} correct so far.</div>`;
+};
+})();
+</script>
+
+
+<script>
+/* Tutor version: answer buttons for every question, true count for Tab 3. */
+(()=>{
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+
+const SMALL={
+  nia:['Add the four zone areas: desk + corridor + meeting & focus + break-out','80 + 40 + 48 + 32 = <b>200 m²</b>'],
+  nua:['NIA − corridor','200 − 40 = <b>160 m²</b>'],
+  mpd:['NIA ÷ 20 desks','200 ÷ 20 = <b>10 m² per desk</b>'],
+  mpp:['NIA ÷ 30 staff','200 ÷ 30 = <b>6.7 m² per person</b>'],
+  dsr:['staff ÷ desks','30 ÷ 20 = <b>1.5 : 1</b>'],
+  sup:['(meeting & focus rooms + break-out) ÷ NIA × 100','(48 + 32) ÷ 200 × 100 = <b>40%</b>'],
+  bench:['Below 10 = tight · 10–12 = about right · above 12 = generous','10 m² per desk is inside 10–12, so <b>about right</b>']
+};
+const TOWER={
+  gia:['Every square inside the outer walls, core included','30 × 20 = <b>600 m²</b>'],
+  core:['The thick-walled block in the middle, lifts included','12 × 7 = <b>84 m²</b>'],
+  nia:['GIA − core','600 − 84 = <b>516 m²</b>'],
+  pc:['Ring around the core + branch to the east','(16 × 11 − 84) + 7 × 2 = 92 + 14 = <b>106 m²</b>'],
+  nua:['NIA − primary circulation','516 − 106 = <b>410 m²</b>'],
+  eff:['NIA ÷ GIA × 100','516 ÷ 600 × 100 = <b>86%</b>'],
+  mpd:['NIA ÷ 60 desks','516 ÷ 60 = <b>8.6 m² per desk</b>'],
+  dsr:['staff ÷ desks','75 ÷ 60 = <b>1.25 : 1</b>'],
+  sup:['(meeting & focus + break-out + support) ÷ NIA × 100','(92 + 48 + 48) ÷ 516 × 100 = 188 ÷ 516 × 100 = <b>36.4%</b>'],
+  bench:['Below 10 = tight · 10–12 = about right · above 12 = generous','8.6 m² per desk is below 10, so <b>tight</b>']
+};
+
+function addAnswers(prefix,data,listSel,checkSel){
+  const list=$(listSel); if(!list)return;
+  Object.entries(data).forEach(([id,[how,ans]])=>{
+    const box=$('#'+prefix+id); if(!box)return;
+    const b=document.createElement('button');b.type='button';b.className='tbtn';b.textContent='Show answer';
+    const a=document.createElement('div');a.className='tans';a.hidden=true;a.innerHTML=`<span class="thow">${how}</span><span>${ans}</span>`;
+    b.onclick=()=>{a.hidden=!a.hidden;b.textContent=a.hidden?'Show answer':'Hide answer'};
+    box.append(b,a);
+  });
+  const all=document.createElement('button');all.type='button';all.className='btn ghost';all.textContent='Show all answers';
+  all.onclick=()=>{const show=all.textContent==='Show all answers';
+    list.querySelectorAll('.tans').forEach(a=>a.hidden=!show);
+    list.querySelectorAll('.tbtn').forEach(b=>b.textContent=show?'Hide answer':'Show answer');
+    all.textContent=show?'Hide all answers':'Show all answers'};
+  $(checkSel).parentElement.append(all);
+}
+addAnswers('q-',SMALL,'#qs','#checkQs');
+addAnswers('q2-',TOWER,'#qs2','#checkQs2');
+
+/* Tab 3: the true observations (same generator as the student page) */
+function mk(seed,nO,nS){let s=seed;const r=()=>(s=(s*16807)%2147483647)/2147483647;const idx=[...Array(20).keys()];for(let i=19;i>0;i--){const j=Math.floor(r()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]]}const a=Array(20).fill('E');idx.slice(0,nO).forEach(i=>a[i]='O');idx.slice(nO,nO+nS).forEach(i=>a[i]='S');return a}
+const REAL=[mk(11,9,3),mk(29,5,7),mk(47,13,2)], TIMES=['10:00','12:00','14:00'];
+const pct=v=>Math.round(v*100)+'%';
+const u=(sol)=>REAL.map(r=>r.filter(s=>s==='O'||(sol&&s==='S')).length/20);
+const sum=(sol)=>{const x=u(sol),avg=x.reduce((a,b)=>a+b,0)/3,peak=Math.max(...x);return{x,avg,peak,need:Math.ceil(peak/.8*20-1e-9)}};
+const occ=sum(false), wsol=sum(true);
+const cnt=(i,m)=>REAL[i].filter(s=>s===m).length;
+
+const card=document.createElement('div');card.className='card tcard';
+card.innerHTML=`<h3>Answer: the true count</h3>
+<div class="row" style="margin-top:10px"><button class="btn" type="button" id="tFill">Fill the sheet with the true count</button><button class="btn ghost" type="button" id="tClear">Clear all three times</button><button class="btn ghost" type="button" id="tShow">Show answer</button></div>
+<div class="tans" id="tAns" hidden>
+<table class="readings" style="margin-top:6px"><tr><td><b>Time</b></td><td><b>O</b></td><td><b>S</b></td><td><b>E</b></td><td><b>Occupied only</b></td><td><b>Incl. signs of life</b></td></tr>
+${TIMES.map((t,i)=>`<tr><td>${t}</td><td>${cnt(i,'O')}</td><td>${cnt(i,'S')}</td><td>${cnt(i,'E')}</td><td>${pct(occ.x[i])}</td><td>${pct(wsol.x[i])}</td></tr>`).join('')}
+<tr class="total"><td>Average</td><td></td><td></td><td></td><td>${pct(occ.avg)}</td><td>${pct(wsol.avg)}</td></tr>
+<tr class="total"><td>Peak</td><td></td><td></td><td></td><td>${pct(occ.peak)}</td><td>${pct(wsol.peak)}</td></tr>
+<tr class="total"><td>Desks needed (peak ÷ 80% × 20)</td><td></td><td></td><td></td><td>${occ.need}</td><td>${wsol.need}</td></tr></table>
+<p class="hint">Counting signs of life as used moves the answer from ${occ.need} to ${wsol.need} desks.</p></div>`;
+const p2=$('#p2'), fin=p2.querySelector('.card.final'); p2.insertBefore(card,fin);
+$('#tShow').onclick=()=>{const a=$('#tAns');a.hidden=!a.hidden;$('#tShow').textContent=a.hidden?'Show answer':'Hide answer'};
+$('#tFill').onclick=()=>{
+  TIMES.forEach((t,i)=>{
+    $$('#times button')[i].click();
+    ['O','S','E'].forEach(m=>{$(`.mode[data-m="${m}"]`).click();REAL[i].forEach((v,n)=>{if(v===m)$(`.cellbtn[data-t="${i}"][data-n="${n}"]`).click()})});
+  });
+  $$('#times button')[0].click();$('.mode[data-m="O"]').click();$('#checkObs').click();
+};
+$('#tClear').onclick=()=>{TIMES.forEach((t,i)=>{$$('#times button')[i].click();$('#clearRound').click()});$$('#times button')[0].click();$('#obsMsg').innerHTML=''};
+})();
+</script>
+</body>
+</html>
