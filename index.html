@@ -196,7 +196,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
       <div class="card">
         <div class="tools" id="tools2"></div>
         <svg id="plan2" class="plan" viewBox="-12 -12 744 504" aria-label="Office tower floor plan with a 1 metre grid"></svg>
-        <div class="hint">Dashed line = edge of the main corridor · grey bars = storage units · lift = box with a cross · stairs = striped box · the core is the thick-walled block in the middle. Wall thickness is ignored.</div>
+        <div class="hint">Dashed line = edge of the main corridor · grey bars = storage units · long tables = co-working · desks boxed in by screens = fixed desks (cubicles) · lift = box with a cross · stairs = striped box · the core is the thick-walled block in the middle. Wall thickness is ignored.</div>
         <div class="row" style="margin-top:12px">
           <button class="btn ghost" id="checkPaint2">Check my colouring</button>
           <button class="btn ghost" id="clearPaint2">Clear</button>
@@ -572,12 +572,19 @@ const fs={fill:'var(--furn)',stroke:'var(--furn-line)','stroke-width':1.1};
 const R=(x,y,w,h,extra={})=>el('rect',{x:x*C,y:y*C,width:w*C,height:h*C,...fs,...extra},gFurn);
 const chair=(x,y,r=.22)=>el('circle',{cx:x*C,cy:y*C,r:r*C,...fs},gFurn);
 let dn=1;const num=(x,y)=>{const t=el('text',{x:x*C,y:y*C+3,'text-anchor':'middle','font-size':7,'font-family':'IBM Plex Mono, monospace',fill:'var(--muted)'},gFurn);t.textContent=dn++};
-// north benches: 4 clusters of 3 x 2
-for(const cx of [0.8,6.1,11.4,16.7])for(const [y,cy] of [[1.0,0.62],[1.8,2.98]])for(let k=0;k<3;k++){const x=cx+k*1.6;R(x,y,1.6,.8);chair(x+.8,cy);num(x+.8,y+.4)}
-// west benches (vertical): 2 clusters, 2 cols x 4 rows
-for(const bx of [0.9,4.1])for(const [x,cx] of [[bx,bx-.38],[bx+.8,bx+1.98]])for(let k=0;k<6;k++){const y=5.3+k*1.6;R(x,y,.8,1.6);chair(cx,y+.8);num(x+.4,y+.8)}
-// east bench: 1 cluster, 2 cols x 4 rows
-for(const bx of [24.2,27.4])for(const [x,cx] of [[bx,bx-.38],[bx+.8,bx+1.98]])for(let k=0;k<3;k++){const y=11.15+k*1.6;R(x,y,.8,1.6);chair(cx,y+.8);num(x+.4,y+.8)}
+// north co-working: 2 long shared tables, 12 seats each, no screens
+for(const tx of [0.8,11.4]){R(tx,1.6,10.1,1.4,{rx:6});for(let k=0;k<6;k++){const sx=tx+.84+k*1.68;chair(sx,1.2);chair(sx,3.4);num(sx,1.9);num(sx,2.7)}}
+// fixed desks in cubicles: each desk boxed in by screens
+const screen=(x1,y1,x2,y2)=>el('line',{x1:x1*C,y1:y1*C,x2:x2*C,y2:y2*C,stroke:'var(--furn-line)','stroke-width':2.2,'stroke-linecap':'round'},gFurn);
+function cubicles(bx,y0,rows){
+  for(const [x,cx] of [[bx,bx-.38],[bx+.8,bx+1.98]])for(let k=0;k<rows;k++){const y=y0+k*1.6;R(x,y,.8,1.6);chair(cx,y+.8);num(x+.4,y+.8)}
+  screen(bx+.8,y0,bx+.8,y0+rows*1.6);
+  for(let k=0;k<=rows;k++)screen(bx-.62,y0+k*1.6,bx+2.22,y0+k*1.6);
+}
+// west: 2 blocks of 2 x 6 cubicles
+for(const bx of [0.9,4.1])cubicles(bx,5.3,6);
+// east: 2 blocks of 2 x 3 cubicles
+for(const bx of [24.2,27.4])cubicles(bx,11.15,3);
 // storage units lining the corridor edge (part of the workstation zone)
 for(const [a,b] of [[0.3,5.5],[6.5,11],[12,16.5],[17.5,21.6]])R(a,4.45,b-a,.5,{fill:'var(--line)'});
 
@@ -630,7 +637,7 @@ const dash=(x1,y1,x2,y2)=>el('line',{x1:x1*C,y1:y1*C,x2:x2*C,y2:y2*C,stroke:'var
 dash(7,5,7,16);dash(7,5,22,5);dash(7,16,17,16);dash(23,11,23,16);dash(23,11,30,11);dash(26,9,30,9);
 /* labels */
 const lab=(x,y,t,s=9.5,w=600)=>{const e=el('text',{x:x*C,y:y*C,'text-anchor':'middle','font-size':s,'font-weight':w,'font-family':'IBM Plex Sans, Arial, sans-serif',fill:'var(--ink)'},gLab);e.textContent=t};
-lab(15,6.25,'Main corridor',11);lab(26.5,10.15,'Corridor',10);lab(15,15.25,'Main corridor',11);
+lab(11.15,.75,'Co-working · shared tables',9.5);lab(3.55,15.6,'Fixed desks (cubicles)',8.5);lab(15,6.25,'Main corridor',11);lab(26.5,10.15,'Corridor',10);lab(15,15.25,'Main corridor',11);
 lab(10.5,10.6,'Stairs');lab(10.5,12.75,'Cleaner',8.5);lab(13.5,9.4,'WC (M)');lab(16.5,9.4,'WC (F)');lab(19.5,8.4,'Acc. WC',8.5);lab(19.5,10.4,'Riser',8.5);lab(19.5,12.7,'Stairs');
 lab(26,4.6,'Boardroom (14)');lab(24.5,8.6,'IT room',8.5);lab(28,7.3,'Lockers',8.5);
 lab(2.5,18.6,'Print & store',9);lab(11,19.05,'Break-out / kitchen');lab(18,16.85,'Phone',8);lab(18,17.25,'room',8);lab(20,16.85,'Phone',8);lab(20,17.25,'room',8);lab(23,19.75,'Meeting (4)',8.5);lab(27.5,19.75,'Meeting (6)',8.5);
@@ -656,7 +663,7 @@ $('#clearPaint2').onclick=()=>{for(let y=0;y<H;y++)for(let x=0;x<W;x++){paint[y]
 $('#checkPaint2').onclick=()=>{
   let ok=0,blank=0;for(let y=0;y<H;y++)for(let x=0;x<W;x++){if(!paint[y][x])blank++;else if(paint[y][x]===truth(x,y))ok++}
   $('#paintMsg2').innerHTML=ok===N?`<div class="msg ok">All ${N} squares are in the right zone. Now use your zone areas for the calculations.</div>`:
-  `<div class="msg ${blank?'info':'bad'}">${ok} of ${N} squares are in the right zone${blank?`, ${blank} are not coloured yet`:''}. Tips: the core is the whole thick-walled block in the middle, including the lifts. The main corridor is the 2 m ring around the core plus the branch to the east, inside the dashed lines. Storage units belong to the workstation zone.</div>`;
+  `<div class="msg ${blank?'info':'bad'}">${ok} of ${N} squares are in the right zone${blank?`, ${blank} are not coloured yet`:''}. Tips: the core is the whole thick-walled block in the middle, including the lifts. The main corridor is the 2 m ring around the core plus the branch to the east, inside the dashed lines. Storage units, co-working tables and fixed-desk cubicles all belong to the workstation zone.</div>`;
 };
 let saved=null,st=0;const zb=$('#showZones2');
 if(zb)zb.onclick=()=>{
