@@ -66,6 +66,12 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .readings tr.total td{border-bottom:0;font-weight:600}
 .dot{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:8px;vertical-align:-1px;border:1px solid var(--furn-line)}
 .btn{font:600 14px var(--f-body);background:var(--accent);color:var(--accent-ink);border:0;border-radius:4px;padding:9px 14px;cursor:pointer}
+#subBtn{display:inline-flex;align-items:center;gap:8px;font-size:15px;padding:11px 18px}
+#subBtn:disabled{background:var(--line);color:var(--muted);cursor:not-allowed}
+#subBtn.ready{background:var(--ok);color:#fff;box-shadow:0 0 0 4px var(--ok-bg)}
+#subBtn svg{flex:none}
+.subnote{font-size:13.5px;color:var(--muted)}
+.subnote.ready{color:var(--ok);font-weight:600}
 .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .msg{font-size:13.5px;border-radius:4px;padding:8px 10px;margin-top:10px}
@@ -241,7 +247,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
             <div class="q"><label for="b-num">Student number</label><input id="b-num" inputmode="numeric" autocomplete="off" style="width:100%;max-width:260px;text-align:left;font-family:var(--f-body)"></div>
             <div class="q"><label for="b-mail">UCL email</label><input id="b-mail" type="email" autocomplete="off" style="width:100%;max-width:260px;text-align:left;font-family:var(--f-body)"></div>
           </fieldset>
-          <div class="row" style="margin-top:14px"><button class="btn" type="submit" id="subBtn" disabled>Submit</button></div>
+          <div class="row" style="margin-top:14px;gap:12px"><button class="btn" type="submit" id="subBtn" disabled>Submit</button><span class="subnote" id="subNote"></span></div>
           <div id="subMsg"></div>
           <p class="hint" style="margin-top:12px">Your names, student numbers, emails and answers go to your BIDI0008 tutor only and are used to record today’s tutorial work.</p>
         </form>
@@ -730,9 +736,16 @@ function status(){
 function refresh(){
   const st=status();
   $('#checklist').innerHTML=st.map(([t,ok,d])=>`<li class="${ok?'done':'todo'}"><span class="ic">${ok?'✓':'!'}</span><span>${t}${d?` <small style="color:var(--muted)">(${d})</small>`:''}</span></li>`).join('');
-  if(!sent)$('#subBtn').disabled=!st.every(x=>x[1]);
+  if(sent||sending)return;
+  const ready=st.every(x=>x[1]), btn=$('#subBtn');
+  btn.disabled=!ready; btn.classList.toggle('ready',ready);
+  btn.innerHTML=(ready?ICON_OPEN:ICON_LOCK)+'<span>Submit</span>';
+  $('#subNote').className='subnote'+(ready?' ready':'');
+  $('#subNote').textContent=ready?'✓ Everything is done. You can submit now.':'Locked until everything in the checklist is ticked.';
 }
-let sent=false;
+const ICON_LOCK='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
+const ICON_OPEN='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.5-2"/></svg>';
+let sent=false, sending=false;
 document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{if(t.dataset.tab==='p4')refresh()}));
 document.querySelectorAll('#subForm input, #subForm select').forEach(i=>i.addEventListener('input',refresh));
 refresh();
@@ -765,7 +778,7 @@ function payload(){
 $('#subForm').addEventListener('submit',async e=>{
   e.preventDefault();refresh();if($('#subBtn').disabled||sent)return;
   if(!SUBMIT_URL){msg('bad','Submission is not switched on yet. Please tell your tutor.');return}
-  const btn=$('#subBtn');btn.disabled=true;btn.textContent='Sending…';
+  const btn=$('#subBtn');sending=true;btn.disabled=true;btn.classList.remove('ready');$('#subNote').textContent='Please keep this page open.';btn.textContent='Sending…';
   try{
     btn.textContent='Taking screenshots…';
     const images={small:await shot('p1'),tower:await shot('p1b'),count:await shot('p2')};
@@ -773,10 +786,10 @@ $('#subForm').addEventListener('submit',async e=>{
     const res=await fetch(SUBMIT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({...payload(),images})});
     const out=await res.json();
     if(!out.ok)throw new Error(out.error||'not saved');
-    sent=true;btn.textContent='Submitted';msg('ok','Submitted. Thank you both! You can close the page now.');
+    sent=true;sending=false;btn.textContent='Submitted';$('#subNote').textContent='';msg('ok','Submitted. Thank you both! You can close the page now.');
     document.querySelectorAll('#subForm input, #subForm select').forEach(i=>i.disabled=true);
   }catch(err){
-    btn.disabled=false;btn.textContent='Submit';
+    sending=false;refresh();
     msg('bad','Your work could not be sent. Check your internet connection and try again. If it still fails, tell your tutor.');
   }
 });
