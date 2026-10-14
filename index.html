@@ -74,6 +74,8 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .msg.info{background:var(--warn-bg);color:var(--ink)}
 .q{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
 .q:last-child{border-bottom:0}
+.qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));column-gap:28px}
+.qgrid .q:last-child{border-bottom:1px solid var(--line)}
 .q label{font-weight:600}
 .q .how{grid-column:1/-1;font-size:12.5px;color:var(--muted);display:flex;flex-direction:column;gap:2px;margin-top:2px}
 .q .ans{grid-column:1/-1;font-size:13px;background:var(--warn-bg);border-radius:4px;padding:6px 8px;font-family:var(--f-mono)}
@@ -99,8 +101,9 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .sheet td.d{font:500 12px var(--f-mono);color:var(--muted);text-align:left;padding-left:8px}
 .cellbtn{width:100%;min-width:34px;font:600 12px var(--f-mono);border:0;border-radius:3px;padding:3px 0;cursor:pointer;background:transparent;color:var(--muted)}
 .cellbtn.O{background:var(--occ);color:var(--panel)} .cellbtn.S{background:var(--sol);color:var(--panel)} .cellbtn.E{background:var(--grid);color:var(--ink)}
-.modes{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch;margin:4px 0 6px}
-.modes-lab{font-size:13px;font-weight:600;color:var(--muted);align-self:center;width:100%}
+.modes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;align-items:stretch;margin:4px 0 6px}
+@media (max-width:560px){.modes{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.modes-lab{font-size:13px;font-weight:600;color:var(--muted);align-self:center;width:100%;grid-column:1/-1}
 .mode{display:flex;gap:8px;align-items:center;text-align:left;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 10px;cursor:pointer;font:inherit}
 .mode strong{display:block;font-size:13.5px}.mode small{display:block;font-size:11.5px;color:var(--muted)}
 .mode[aria-checked="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);background:var(--panel)}
@@ -156,7 +159,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
   <!-- PART 1 -->
   <section id="p1">
     <div class="facts" style="margin-top:16px"><span class="fact">Level 1 · small office</span><span class="fact">20 × 10 m floor</span><span class="fact">20 desks</span><span class="fact">30 staff</span><span class="fact">1 square = 1 m²</span></div>
-    <p class="intro"><b>Space data: how much space do we have, and how is it divided?</b> Pick a zone, then click or drag over the grid squares to colour the plan. The lab counts the squares for you. Then use your zone areas to work out the numbers on the right. Each one has a short explanation of what it means. Press Check when you are done.</p>
+    <p class="intro"><b>Space data: how much space do we have, and how is it divided?</b> Pick a zone, then click or drag over the grid squares to colour the plan. The lab counts the squares for you. Then use your zone areas to work out the numbers below. Each one has a short explanation of what it means. Press Check when you are done.</p>
     <div class="grid2">
       <div class="card">
         <div class="tools" id="tools"></div>
@@ -168,29 +171,27 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
         </div>
         <div id="paintMsg"></div>
       </div>
-      <div class="stack">
-        <div class="card">
-          <h3>Zone areas (counted live)</h3>
-          <table class="readings" id="areaTable"></table>
-        </div>
-        <div class="card">
-          <h3>Your calculations</h3>
-          <div id="qs"></div>
-          <div class="row" style="margin-top:12px"><button class="btn" id="checkQs">Check answers</button></div>
-          <div id="qsMsg"></div>
-        </div>
+      <div class="card">
+        <h3>Zone areas (counted live)</h3>
+        <table class="readings" id="areaTable"></table>
       </div>
+    </div>
+    <div class="card" style="margin-top:20px">
+      <h3>Your calculations</h3>
+      <div id="qs" class="qgrid"></div>
+      <div class="row" style="margin-top:12px"><button class="btn" id="checkQs">Check answers</button></div>
+      <div id="qsMsg"></div>
     </div>
     <div class="card final">
       <h3>Before you move on: what can't this plan tell you?</h3>
-      <p class="note">The plan gives you space data only. Discuss with your partner: are the 20 desks actually used? When is the office busiest? Is it too noisy? Then go to Tab 2: tower floor.</p>
+      <p class="note">The plan gives you space data only. Are the 20 desks actually used? When is the office busiest? Is it too noisy?</p>
     </div>
   </section>
 
   <!-- LEVEL 2: TOWER FLOOR -->
   <section id="p1b" hidden>
     <div class="facts" style="margin-top:16px"><span class="fact">Level 2 · tower floor</span><span class="fact">30 × 20 m floor</span><span class="fact">60 desks</span><span class="fact">75 staff</span><span class="fact">1 square = 1 m²</span></div>
-    <p class="intro"><b>A typical floor in an office tower.</b> It has a central core (lifts, stairs, toilets, risers) that the tenant cannot use for work, a main corridor around the core, and more kinds of rooms. Colour the zones, then work out the numbers on the right.</p>
+    <p class="intro"><b>A typical floor in an office tower.</b> It has a central core (lifts, stairs, toilets, risers) that the tenant cannot use for work, a main corridor around the core, and more kinds of rooms. Colour the zones, then work out the numbers below.</p>
     <div class="grid2">
       <div class="card">
         <div class="tools" id="tools2"></div>
@@ -202,18 +203,16 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
         </div>
         <div id="paintMsg2"></div>
       </div>
-      <div class="stack">
-        <div class="card">
-          <h3>Zone areas (counted live)</h3>
-          <table class="readings" id="areaTable2"></table>
-        </div>
-        <div class="card">
-          <h3>Your calculations</h3>
-          <div id="qs2"></div>
-          <div class="row" style="margin-top:12px"><button class="btn" id="checkQs2">Check answers</button></div>
-          <div id="qsMsg2"></div>
-        </div>
+      <div class="card">
+        <h3>Zone areas (counted live)</h3>
+        <table class="readings" id="areaTable2"></table>
       </div>
+    </div>
+    <div class="card" style="margin-top:20px">
+      <h3>Your calculations</h3>
+      <div id="qs2" class="qgrid"></div>
+      <div class="row" style="margin-top:12px"><button class="btn" id="checkQs2">Check answers</button></div>
+      <div id="qsMsg2"></div>
     </div>
     <div class="card final">
       <h3>Compare the two floors</h3>
@@ -287,7 +286,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
             <div><div class="k">Peak utilisation</div><div class="v" id="peakU">–</div></div>
             <div><div class="k">Desks needed at 80% target</div><div class="v" id="need">–</div></div>
           </div>
-          <p class="hint">Utilisation = desks used ÷ 20 desks. Desks needed = peak utilisation ÷ 80% target × 20 desks, rounded up (Lecture 2b).</p>
+          <p class="hint">Utilisation = desks used ÷ 20 desks.<br>Desks needed = peak utilisation ÷ 80% target × 20 desks, rounded up (Lecture 2b).</p>
           <div class="row" style="margin-top:6px"><button class="btn" id="checkObs">Compare with the true count</button></div>
           <div id="obsMsg"></div>
         </div>
@@ -302,7 +301,6 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
       <h3>Discuss with your partner, then compare with another pair</h3>
       <ul>
         <li>Did you count “signs of life” as used? How much did that change the answer?</li>
-        <li>What would you conclude if you had only counted once, at 12:00? Or only at 14:00?</li>
         <li>What does this observation still not tell you (noise, comfort, why people stay away)? Which method would you use for that?</li>
       </ul>
       <p class="note" style="margin-top:10px">Write down your numbers before you close the page, then compare them with another pair.</p>
@@ -352,8 +350,8 @@ function furniture(g,withNums){
 }
 furniture(gFurn,true);
 const fs={fill:'var(--furn)',stroke:'var(--furn-line)','stroke-width':1.3};
-el('rect',{x:1.2*C,y:7.3*C,width:3.6*C,height:1.4*C,rx:5,...fs},gFurn);
-for(let k=0;k<4;k++)for(const cy of [6.95,9.05])el('circle',{cx:(1.65+k*.9)*C,cy:cy*C,r:.22*C,...fs},gFurn);
+el('rect',{x:.6*C,y:7.3*C,width:3.6*C,height:1.4*C,rx:5,...fs},gFurn);
+for(let k=0;k<4;k++)for(const cy of [6.95,9.05])el('circle',{cx:(1.05+k*.9)*C,cy:cy*C,r:.22*C,...fs},gFurn);
 for(const fx of [6,9]){el('rect',{x:(fx+.6)*C,y:8.7*C,width:1.8*C,height:.8*C,...fs},gFurn);el('circle',{cx:(fx+1.5)*C,cy:8.3*C,r:.22*C,...fs},gFurn)}
 for(const tx of [14,17]){el('circle',{cx:tx*C,cy:8*C,r:.6*C,...fs},gFurn);for(const [dx,dy] of [[-.95,0],[.95,0],[0,-.95],[0,.95]])el('circle',{cx:(tx+dx)*C,cy:(8+dy)*C,r:.2*C,...fs},gFurn)}
 el('rect',{x:19.3*C,y:6.4*C,width:.7*C,height:3.4*C,...fs},gFurn);
