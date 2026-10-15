@@ -71,6 +71,11 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 #subBtn:disabled{background:var(--line);color:var(--muted);cursor:not-allowed}
 #subBtn.ready{background:var(--ok);color:#fff;box-shadow:0 0 0 4px var(--ok-bg)}
 #subBtn svg{flex:none}
+.score{margin-top:14px;border-radius:6px;padding:10px 14px;font-size:14px;background:var(--bg);color:var(--muted);border:1px solid var(--line)}
+.score:empty{display:none}
+.score b{font:700 18px var(--f-display);color:var(--ink);margin-right:6px}
+.score.pass{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}.score.pass b{color:var(--ok)}
+.score.fail{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}.score.fail b{color:var(--bad)}
 .subnote{font-size:13.5px;color:var(--muted)}
 .subnote.ready{color:var(--ok);font-weight:600}
 .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
@@ -197,6 +202,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
       <div id="qs" class="qgrid"></div>
       <div class="row" style="margin-top:12px"><button class="btn" id="checkQs">Check answers</button></div>
       <div id="qsMsg"></div>
+      <div class="score" id="score1"></div>
     </div>
     <div class="card final">
       <h3>Before you move on: what can't this plan tell you?</h3>
@@ -230,6 +236,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
       <div id="qs2" class="qgrid"></div>
       <div class="row" style="margin-top:12px"><button class="btn" id="checkQs2">Check answers</button></div>
       <div id="qsMsg2"></div>
+      <div class="score" id="score2"></div>
     </div>
     <div class="card final">
       <h3>Compare the two floors</h3>
@@ -277,6 +284,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
           <p class="hint">Utilisation = desks used ÷ 20 desks.<br>Desks needed = peak utilisation ÷ 80% target × 20 desks, rounded up (Lecture 2b).</p>
           <div class="row" style="margin-top:6px"><button class="btn" id="checkObs">Compare with the true count</button></div>
           <div id="obsMsg"></div>
+          <div class="score" id="score3"></div>
         </div>
       </div>
       <div class="card">
