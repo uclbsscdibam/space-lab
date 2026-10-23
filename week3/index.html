@@ -137,7 +137,7 @@ fieldset.pp legend{font-weight:600;padding:0 4px}
   <header>
     <div class="eyebrow">BIDI0008 · Tutorial 3 · Asking people</div>
     <h1>Data Collection Planner</h1>
-    <p class="save" style="margin:6px 0 0">Submit before your tutorial ends. Late submissions are not accepted.</p>
+    <p class="save" style="margin:6px 0 0">Submit before your tutorial ends. Submissions up to 5 minutes late are accepted but marked late.</p>
   </header>
 
   <div class="tabs" role="tablist">
@@ -500,7 +500,7 @@ const loadSess=()=>fetch(SUBMIT_URL+'?sessions=week3').then(r=>r.json()).then(j=
 loadSess();
 const nowS=()=>Date.now()+skew;
 const hm=t=>new Date(t).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/London'});
-function deadline(){const g=v('s-tut'),s=SESS&&SESS[g];if(!s)return null;return{g,end:s.end,closed:nowS()>s.end,left:s.end-nowS()}}
+function deadline(){const g=v('s-tut'),s=SESS&&SESS[g];if(!s)return null;const until=s.lateUntil||s.end;return{g,end:s.end,until,late:nowS()>s.end,closed:nowS()>until,left:s.end-nowS()}}
 setInterval(()=>{if(!sent)refresh()},15000);
 function status(){
   const m3=S.methods.length>2;
@@ -515,7 +515,7 @@ function status(){
   if(m3)st.push(['Method 3 complete (or removed)',!missing(2).length,missing(2).length?`${missing(2).length} items outstanding`:'']);
   st.push(['Tutorial group selected',!!v('s-tut'),'']);
   const dl=deadline();
-  if(dl)st.push([`Before your tutorial ends (${hm(dl.end)})`,!dl.closed,dl.closed?`submissions for ${dl.g} are closed`:'']);
+  if(dl)st.push([`Before submissions close (${hm(dl.until)})`,!dl.closed,dl.closed?`submissions for ${dl.g} are closed`:'']);
   st.push(['Working arrangement selected (individually or in a pair)',!!S.mode,'']);
   st.push([pair?'Both students: full name, student number (digits only) and UCL email':'Full name, student number (digits only) and UCL email',ok&&distinct,ok&&!distinct?'the two student numbers must be different':'']);
   return st;
@@ -527,8 +527,10 @@ function refresh(){
   const dl=deadline(),n=$('#dlNote');
   if(sent||!dl){n.textContent='';return}
   const mins=Math.ceil(dl.left/60000);
-  n.textContent=dl.closed?`Submissions for ${dl.g} closed at ${hm(dl.end)}. Late submissions are not accepted.`:`Submissions for ${dl.g} close at ${hm(dl.end)} (${mins} min left).`;
-  n.style.color=dl.closed||mins<=5?'var(--bad)':'';n.style.fontWeight=dl.closed||mins<=5?'600':'';
+  n.textContent=dl.closed?`Submissions for ${dl.g} closed at ${hm(dl.until)}. Late submissions are no longer accepted.`:
+    dl.late?`Your tutorial ended at ${hm(dl.end)}. You can still submit until ${hm(dl.until)}, but it will be marked late.`:
+    `Submissions for ${dl.g} close at ${hm(dl.end)} (${mins} min left).`;
+  n.style.color=dl.late||mins<=5?'var(--bad)':'';n.style.fontWeight=dl.late||mins<=5?'600':'';
 }
 function methodText(i){
   const m=S.methods[i];if(!m)return '';
@@ -558,9 +560,9 @@ $('#subForm').addEventListener('submit',async e=>{
   try{
     const res=await fetch(SUBMIT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
     const out=await res.json();
-    if(out.error==='closed'){btn.textContent='Closed';msg('bad',`Submissions for ${esc(payload.tutorial)} closed at ${esc(out.closedAt)}. Late submissions are not accepted. Please speak to your tutor.`);return}
+    if(out.error==='closed'){btn.textContent='Closed';msg('bad',`Submissions for ${esc(payload.tutorial)} closed at ${esc(out.closedAt)}. Late submissions are no longer accepted. Please speak to your tutor.`);return}
     if(!out.ok)throw new Error(out.error||'not saved');
-    sent=true;$('#dlNote').textContent='';btn.textContent='Submitted';msg('ok','Submitted. Thank you. You may now close this page.');
+    sent=true;$('#dlNote').textContent='';btn.textContent='Submitted';msg(out.late?'bad':'ok',out.late?`Submitted, but marked late (${esc(out.minutesLate)} min after your tutorial ended). You may now close this page.`:'Submitted. Thank you. You may now close this page.');
     document.querySelectorAll('#subForm input, #subForm select').forEach(i=>i.disabled=true);
   }catch(err){btn.disabled=false;btn.textContent='Submit';msg('bad','Your plan could not be sent. Please check your internet connection and press Submit again. If the problem continues, please inform your tutor.')}
 });
