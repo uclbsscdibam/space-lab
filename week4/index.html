@@ -179,7 +179,7 @@ fieldset.pp legend{font-weight:600;padding:0 4px}
   <header>
     <div class="eyebrow">BIDI0008 · Tutorial 4 · Post-occupancy evaluation</div>
     <h1>POE Data Lab</h1>
-    <p class="save" style="margin:6px 0 0">Submit before your tutorial ends. Submissions up to 5 minutes late are accepted but marked late.</p>
+    <p class="save" style="margin:6px 0 0">Submit before your tutorial ends. Submissions up to 5 minutes late are accepted but marked late. Later submissions are recorded but do not count for attendance.</p>
   </header>
 
   <div class="tabs" role="tablist">
@@ -447,8 +447,6 @@ function status(){
     st.push(['Q4: interpretation',filled(v('a-int'),20),'']);
     st.push(['Q5: requirement',filled(v('a-req'),15),'']);
   } else st.push(['Enter your student number to see your task',false,'']);
-  const dl=deadline();
-  if(dl)st.push([`Before submissions close (${hm(dl.until)})`,!dl.closed,dl.closed?`submissions for ${dl.g} are closed`:'']);
   return st;
 }
 function refresh(){
@@ -458,7 +456,7 @@ function refresh(){
   const dl=deadline(),n=$('#dlNote');
   if(sent||!dl){n.textContent='';return}
   const mins=Math.ceil(dl.left/60000);
-  n.textContent=dl.closed?`Submissions for ${dl.g} closed at ${hm(dl.until)}. Late submissions are no longer accepted.`:
+  n.textContent=dl.closed?`Attendance for ${dl.g} closed at ${hm(dl.until)}. You can still submit, but it will not count for attendance.`:
     dl.late?`Your tutorial ended at ${hm(dl.end)}. You can still submit until ${hm(dl.until)}, but it will be marked late.`:
     `Submissions for ${dl.g} close at ${hm(dl.end)} (${mins} min left).`;
   n.style.color=dl.late||mins<=5?'var(--bad)':'';n.style.fontWeight=dl.late||mins<=5?'600':'';
@@ -470,7 +468,6 @@ $('#subForm').addEventListener('submit',async e=>{
   const btn=$('#subBtn');btn.disabled=true;btn.textContent='Sending…';
   if(!SESS)await loadSess();
   if(!SESS){btn.disabled=false;btn.textContent='Submit';msg('bad','Could not connect to the submission system. Please check your internet connection and press Submit again. If the problem continues, please inform your tutor.');return}
-  refresh();if(deadline()&&deadline().closed){btn.textContent='Closed';btn.disabled=true;msg('bad','Submissions for your tutorial are closed. Late submissions are not accepted.');return}
   btn.disabled=true;btn.textContent='Sending…';
   const payload={week:'Tutorial 4',kind:'answers',tutorial:v('s-tut'),
     s1_name:v('p1-name'),s1_number:v('p1-num'),s1_email:v('p1-mail'),
@@ -480,9 +477,8 @@ $('#subForm').addEventListener('submit',async e=>{
   try{
     const res=await fetch(SUBMIT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
     const out=await res.json();
-    if(out.error==='closed'){btn.textContent='Closed';msg('bad',`Submissions for ${esc(payload.tutorial)} closed at ${esc(out.closedAt)}. Late submissions are no longer accepted. Please speak to your tutor.`);return}
     if(!out.ok)throw new Error(out.error||'not saved');
-    sent=true;$('#dlNote').textContent='';btn.textContent='Submitted';msg(out.late?'bad':'ok',out.late?`Submitted, but marked late (${esc(out.minutesLate)} min after your tutorial ended). You may now close this page.`:'Submitted. Thank you. You may now close this page.');
+    sent=true;$('#dlNote').textContent='';btn.textContent='Submitted';msg(out.late?'bad':'ok',out.tooLate?`Submitted, but too late to count for attendance (${esc(out.minutesLate)} min after your tutorial ended). You may now close this page.`:out.late?`Submitted, but marked late (${esc(out.minutesLate)} min after your tutorial ended). You may now close this page.`:'Submitted. Thank you. You may now close this page.');
     document.querySelectorAll('#subForm input, #subForm select, #subForm textarea').forEach(i=>i.disabled=true);
   }catch(err){btn.disabled=false;btn.textContent='Submit';msg('bad','Your answers could not be sent. Please check your internet connection and press Submit again. If the problem continues, please inform your tutor.')}
 });
