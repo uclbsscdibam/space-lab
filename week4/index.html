@@ -172,6 +172,11 @@ fieldset.pp legend{font-weight:600;padding:0 4px}
 .taskcard .tk b{display:block;font:700 20px var(--f-display);color:#fff}
 .taskcard p{margin:10px 0 0;font-size:13px;color:#EEDEFF}
 .pstar{color:var(--accent);font-weight:700}
+.checklist li.todo[data-go]{cursor:pointer}
+.checklist li.todo[data-go] .t{text-decoration:underline;text-decoration-color:var(--bad);text-underline-offset:3px}
+.checklist li small.why{display:block;color:var(--bad);font-size:12.5px;margin-top:1px}
+.flash{outline:3px solid var(--bad)!important;outline-offset:3px;border-radius:4px}
+.ready-note{font-size:13px;color:var(--bad);font-weight:600;margin-top:8px}
 </style>
 </head>
 <body>
@@ -280,6 +285,7 @@ fieldset.pp legend{font-weight:600;padding:0 4px}
             </div>
           </div>
           <div class="row" style="margin-top:14px"><button class="btn" type="submit" id="subBtn" disabled>Submit</button></div>
+          <div class="ready-note" id="readyNote"></div>
           <div id="subMsg"></div>
           <p class="save" style="margin-top:12px">Your name, student number, email address and answers are sent only to your BIDI0008 tutor and are used to record your participation in today’s tutorial. Your survey answers in Tab 1 are anonymous.</p>
         </form>
@@ -322,10 +328,11 @@ function scaleHTML(k,q,sub,lo,hi){
 $('#scales').innerHTML=FACTORS.map(([k,l,s])=>scaleHTML(k,l,s,'Very dissatisfied','Very satisfied')).join('')+
   `<div class="sec-lab" style="margin-top:14px">Overall</div>`+scaleHTML(OUT[0],OUT[2],'','Not at all well','Extremely well');
 function svMissing(){const m=[];if(!$('#sv-tut').value)m.push('tutorial group');if(!$('#sv-loc').value)m.push('lecture hall');
-  const left=VARS.filter(k=>!D.sv[k]).length;if(left)m.push(`${left} rating${left>1?'s':''}`);return m}
+  VARS.filter(k=>!D.sv[k]).forEach(k=>m.push(LABEL[k]));return m}
 function svRefresh(){
   if(D.surveyDone){$('#surveyDone').hidden=false;$('#survey').querySelectorAll('input,select,button').forEach(x=>x.disabled=true);$('#svNote').textContent='';return}
-  const m=svMissing();$('#svBtn').disabled=!!m.length;$('#svNote').textContent=m.length?'Still to answer: '+m.join(', '):'Ready to submit';
+  const m=svMissing();$('#svBtn').disabled=!!m.length;$('#svNote').innerHTML=m.length?`Still to answer: ${esc(m.slice(0,3).join(', '))}${m.length>3?` and ${m.length-3} more`:''} · <a href="#" id="svGo">go to the first one</a>`:'Ready to submit';
+  const g=$('#svGo');if(g)g.onclick=e=>{e.preventDefault();const k=VARS.find(k=>!D.sv[k]);go(!$('#sv-tut').value?'sv-tut':!$('#sv-loc').value?'sv-loc':k?document.querySelector(`input[name="${k}"]`).closest('.scale'):null)};
 }
 $('#survey').addEventListener('change',e=>{
   const t=e.target;
@@ -435,24 +442,40 @@ function deadline(){const g=v('s-tut'),s=SESS&&SESS[g];if(!s)return null;const u
 setInterval(()=>{if(!sent)refresh()},15000);
 
 let sent=false;
+/* Each item: [text, done, what is missing, field to jump to] */
 function status(){
-  const hmv=+v('a-hm'),r=v('a-r')===''?NaN:+v('a-r');
-  const st=[
-    ['Tutorial group selected',!!v('s-tut'),''],
-    ['Full name, student number (digits only) and UCL email',!!v('p1-name')&&okNum(v('p1-num'))&&okMail(v('p1-mail')),'']];
+  const hmv=v('a-hm')===''?NaN:+v('a-hm'),r=v('a-r')===''?NaN:+v('a-r'),num=v('p1-num');
+  const len=id=>v(id).length;
+  const st=[['Tutorial group selected',!!v('s-tut'),'choose your tutorial group','s-tut']];
+  const who=!v('p1-name')?['enter your full name','p1-name']:!okNum(num)?[num?'student number: digits only, no spaces or letters (6–10 digits)':'enter your student number','p1-num']:!okMail(v('p1-mail'))?[v('p1-mail')?'email address is not complete (e.g. name@ucl.ac.uk)':'enter your UCL email','p1-mail']:null;
+  st.push(['Full name, student number (digits only) and UCL email',!who,who?who[0]:'',who?who[1]:'']);
   if(TASK){
-    st.push(['Q1: dataset, tool and n',!!(v('a-data')&&v('a-tool')&&+v('a-n')>0),'']);
-    st.push([`Q2: N and mean for ${TASK.hall}`,v('a-hn')!==''&&hmv>=1&&hmv<=10,'']);
-    st.push(['Q3: r (between −1 and 1) and p-value',!isNaN(r)&&r>=-1&&r<=1&&!!v('a-p'),'']);
-    st.push(['Q4: interpretation',filled(v('a-int'),20),'']);
-    st.push(['Q5: requirement',filled(v('a-req'),15),'']);
-  } else st.push(['Enter your student number to see your task',false,'']);
+    const q1=!v('a-data')?['choose the dataset you analysed','a-data']:!v('a-tool')?['choose the tool you used','a-tool']:!(+v('a-n')>0)?['enter the total number of responses (n)','a-n']:null;
+    st.push(['Q1: dataset, tool and n',!q1,q1?q1[0]:'',q1?q1[1]:'']);
+    const q2=v('a-hn')===''?['enter N for your hall','a-hn']:isNaN(hmv)?['enter the mean concentration','a-hm']:!(hmv>=1&&hmv<=10)?['the mean must be between 1 and 10','a-hm']:null;
+    st.push([`Q2: N and mean for ${TASK.hall}`,!q2,q2?q2[0]:'',q2?q2[1]:'']);
+    const q3=isNaN(r)?['enter Pearson’s r','a-r']:!(r>=-1&&r<=1)?['r must be between −1 and 1 (e.g. 0.35 or -0.12)','a-r']:!v('a-p')?['choose the p-value','a-p']:null;
+    st.push(['Q3: r (between −1 and 1) and p-value',!q3,q3?q3[0]:'',q3?q3[1]:'']);
+    st.push(['Q4: interpretation',filled(v('a-int'),20),`write at least 20 characters (${len('a-int')} so far)`,'a-int']);
+    st.push(['Q5: requirement',filled(v('a-req'),15),`write at least 15 characters (${len('a-req')} so far)`,'a-req']);
+  } else st.push(['Enter your student number to see your task',false,okNum(num)||!num?'':'student number: digits only, no spaces or letters (6–10 digits)','p1-num']);
   return st;
 }
+/* Jump to a field: open its tab, scroll to it, put the cursor there and outline it */
+function go(t){
+  const el=typeof t==='string'?$('#'+t):t;if(!el)return;
+  const sec=el.closest('section');if(sec&&sec.hidden)showTab(sec.id);
+  setTimeout(()=>{el.scrollIntoView({behavior:'smooth',block:'center'});const f=el.matches('input,select,textarea')?el:el.querySelector('input,select,textarea');if(f)f.focus({preventScroll:true});
+    el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),2200)},60);
+}
+$('#checklist').addEventListener('click',e=>{const li=e.target.closest('li[data-go]');if(li)go(li.dataset.go)});
+$('#checklist').addEventListener('keydown',e=>{const li=e.target.closest('li[data-go]');if(li&&(e.key==='Enter'||e.key===' ')){e.preventDefault();go(li.dataset.go)}});
 function refresh(){
   const st=status();
-  $('#checklist').innerHTML=st.map(([t,ok,d])=>`<li class="${ok?'done':'todo'}"><span class="ic">${ok?'✓':'!'}</span><span>${esc(t)}${d?` <small style="color:var(--muted)">(${esc(d)})</small>`:''}</span></li>`).join('');
-  if(!sent)$('#subBtn').disabled=!st.every(x=>x[1]);
+  $('#checklist').innerHTML=st.map(([t,ok,d,id])=>`<li class="${ok?'done':'todo'}"${!ok&&id?` data-go="${id}" tabindex="0" role="button"`:''}><span class="ic">${ok?'✓':'!'}</span><span><span class="t">${esc(t)}</span>${!ok&&d?`<small class="why">${esc(d)}</small>`:''}</span></li>`).join('');
+  const left=st.filter(x=>!x[1]).length;
+  if(!sent){$('#subBtn').disabled=!!left;$('#readyNote').textContent=left?`Not ready yet: ${left} item${left>1?'s':''} left. Tap a red item in the checklist to go straight to it.`:''}
+  else $('#readyNote').textContent='';
   const dl=deadline(),n=$('#dlNote');
   if(sent||!dl){n.textContent='';return}
   const mins=Math.ceil(dl.left/60000);
