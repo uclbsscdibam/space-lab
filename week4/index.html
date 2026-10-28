@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>html{color-scheme:light}body{margin:0;font:14px system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>POE Data Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: a planning worksheet — brief to read, method cards to fill, submit at the end */
+:root{
+  --bg:#f6f7f5; --panel:#ffffff; --ink:#1d2321; --muted:#5d6763; --line:#d8ddda; --soft:#eef1ef;
+  --accent:#0f6b5c; --accent-ink:#ffffff; --accent-bg:#e2f1ed;
+  --ok:#1f7a3a; --ok-bg:#e3f4e7; --bad:#b3261e; --bad-bg:#fbe7e5; --warn-bg:#fff4d6;
+  --quote:#6a4bb5; --quote-bg:#f1edfb;
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-body:"IBM Plex Sans","Segoe UI",Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141917; --panel:#1c2220; --ink:#e7ece9; --muted:#9aa5a0; --line:#323a37; --soft:#232a27;
+  --accent:#4fc2a8; --accent-ink:#0d1412; --accent-bg:#1b3530;
+  --ok:#7ad69a; --ok-bg:#1d3526; --bad:#ff8a80; --bad-bg:#3d2220; --warn-bg:#3a3220;
+  --quote:#b9a6f0; --quote-bg:#272238; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141917; --panel:#1c2220; --ink:#e7ece9; --muted:#9aa5a0; --line:#323a37; --soft:#232a27;
+  --accent:#4fc2a8; --accent-ink:#0d1412; --accent-bg:#1b3530;
+  --ok:#7ad69a; --ok-bg:#1d3526; --bad:#ff8a80; --bad-bg:#3d2220; --warn-bg:#3a3220;
+  --quote:#b9a6f0; --quote-bg:#272238; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1100px;margin:0 auto;padding-inline:16px;padding-block:20px 56px}
+header{border-bottom:2px solid var(--ink);padding-bottom:14px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(26px,4vw,38px);line-height:1.05;margin:4px 0 0;text-wrap:balance}
+h2{font-family:var(--f-display);font-weight:700;font-size:22px;margin:0;text-wrap:balance}
+h3{font-family:var(--f-display);font-weight:700;font-size:16px;margin:0}
+.tabs{display:flex;gap:4px;margin:18px 0 0;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{font:600 14px var(--f-body);color:var(--muted);background:none;border:0;border-bottom:3px solid transparent;padding:10px 14px;cursor:pointer;white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.tab .n{font-family:var(--f-mono);margin-right:6px;color:var(--accent)}
+.intro{max-width:72ch;color:var(--muted);margin:16px 0 18px}
+.intro b{color:var(--ink)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px}
+.stack{display:flex;flex-direction:column;gap:16px;min-width:0}
+.companies{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;margin-bottom:18px}
+.co{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:10px 12px;cursor:pointer;font:inherit}
+.co small{font-family:var(--f-mono);font-size:11.5px;color:var(--accent)}
+.co strong{font-size:15px}
+.co span{font-size:12.5px;color:var(--muted)}
+.co .plate{align-self:stretch;display:flex;align-items:center;justify-content:center;height:72px;background:#fff;border:1px solid #ecefed;border-radius:5px;padding:8px 10px;margin-bottom:6px}
+.co .plate img{max-height:100%;max-width:100%;display:block}
+.co .meta{font-size:12.5px;color:var(--muted)}
+.co .meta b{font-family:var(--f-mono);font-weight:500;font-size:11.5px;color:var(--accent);margin-right:6px}
+.bhead{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.bhead .plate{background:#fff;border:1px solid #ecefed;border-radius:6px;padding:10px 14px;height:84px;display:flex;align-items:center}
+.bhead .plate img{max-height:100%;max-width:300px;display:block}
+.chosen{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:6px;padding:12px 16px;margin-bottom:16px}
+.chosen .plate{background:#fff;border:1px solid #ecefed;border-radius:5px;padding:6px 10px;height:56px;display:flex;align-items:center}
+.chosen .plate img{max-height:100%;max-width:220px;display:block}
+.chosen .txt{flex:1;min-width:200px}
+.chosen .txt small{display:block;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.chosen .txt strong{font-size:17px}
+.co[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.brief{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px}
+@media (max-width:820px){.brief{grid-template-columns:minmax(0,1fr)}}
+.brief p{margin:6px 0 0;max-width:68ch}
+.sec-lab{font:600 12px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+table.teams{width:100%;border-collapse:collapse;font-size:14px}
+table.teams td{padding:6px 0;border-bottom:1px solid var(--line);vertical-align:top}
+table.teams td.num{font-family:var(--f-mono);text-align:right;padding-right:12px;width:44px}
+table.teams td.note{color:var(--muted);font-size:13px;padding-left:12px}
+ul.data{margin:0;padding-left:18px}ul.data li{margin:4px 0}
+.quote{background:var(--quote-bg);border-radius:6px;padding:10px 12px;margin:0 0 8px}
+.quote b{display:block;font-size:12.5px;color:var(--quote)}
+.quote q{font-style:italic}
+ol.opts{margin:6px 0 0;padding-left:20px}ol.opts li{margin:3px 0}
+.task{background:var(--accent-bg);border-radius:6px;padding:12px 14px;margin-top:4px}
+.task b{color:var(--ink)}
+.method{border-left:4px solid var(--accent)}
+.mhead{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:6px}
+.pill{font:600 12px var(--f-body);border-radius:999px;padding:3px 10px}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}.pill.todo{background:var(--warn-bg);color:var(--ink)}
+.step{display:grid;grid-template-columns:28px minmax(0,1fr);gap:4px 10px;padding:14px 0;border-top:1px solid var(--line)}
+.step .sn{font:700 13px var(--f-mono);color:var(--accent);padding-top:2px}
+.step label.lab,.step .lab{font-weight:600;display:block;margin-bottom:4px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.field{display:flex;flex-direction:column;gap:3px;min-width:0}
+.field small{color:var(--muted);font-size:12.5px}
+input[type=text],input[type=number],input[type=email],select,textarea{font:inherit;font-size:14.5px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:7px 9px;max-width:100%}
+textarea{width:100%;min-height:58px;resize:vertical}
+input[type=text].w100{width:100%}
+select{min-width:180px}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.qbox{background:var(--soft);border-radius:6px;padding:10px 12px;margin:8px 0}
+.qbox .qn{font:600 12px var(--f-mono);color:var(--muted);margin-bottom:4px}
+.qbox .qx{display:flex;gap:8px;align-items:center}
+.qbox .qx span{font-weight:400}
+.infoline{margin-top:6px;font-size:13px;color:var(--muted)}
+.glist{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(250px,100%),1fr));gap:3px 8px}
+.grow{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:2px 4px 2px 8px;border-radius:4px;background:var(--soft);min-height:32px}
+.grow label{display:flex;gap:6px;align-items:center;font-size:13.5px;line-height:1.25;min-width:0}
+.grow label small{color:var(--muted);font-size:11.5px;white-space:nowrap}
+.grow input[type=number],.grow input[type=text]{font-size:13.5px;padding:3px 6px;height:26px}
+.grow input[type=number]{width:58px;flex:none}
+.grow input:disabled{opacity:.4}
+.linkbtn{margin-left:auto;background:none;border:0;padding:0;font:500 12.5px var(--f-body);color:var(--bad);cursor:pointer;text-decoration:underline}
+.btn.small{font-size:13px;padding:5px 10px}
+.qbox .grid{display:grid;grid-template-columns:minmax(0,1fr);gap:6px}
+.tips{font-size:13px;background:var(--warn-bg);border-radius:6px;padding:8px 12px;margin:2px 0 6px}
+.tips ul{margin:4px 0 0;padding-left:18px}
+.checks{display:flex;flex-wrap:wrap;gap:6px 16px;margin-bottom:6px}
+.checks label{display:flex;gap:6px;align-items:center;font-size:14px}
+.btn{font:600 14px var(--f-body);background:var(--accent);color:var(--accent-ink);border:0;border-radius:4px;padding:9px 14px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn:disabled{background:var(--line);color:var(--muted);cursor:not-allowed}
+.msg{font-size:13.5px;border-radius:4px;padding:8px 10px;margin-top:10px}
+.msg.ok{background:var(--ok-bg);color:var(--ok)}.msg.bad{background:var(--bad-bg);color:var(--bad)}.msg.info{background:var(--warn-bg);color:var(--ink)}
+.missing{font-size:13px;color:var(--muted);margin:6px 0 0;padding-left:18px}
+.grid2{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:820px){.grid2{grid-template-columns:minmax(0,1fr)}}
+fieldset.pp{border:1px solid var(--line);border-radius:6px;padding:8px 14px 12px;margin:12px 0 0}
+fieldset.pp legend{font-weight:600;padding:0 4px}
+.checklist{list-style:none;margin:10px 0 0;padding:0}
+.checklist li{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px}
+.checklist .ic{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:12px}
+.checklist .done .ic{background:var(--ok-bg);color:var(--ok)}.checklist .todo .ic{background:var(--bad-bg);color:var(--bad)}
+.save{font-size:12.5px;color:var(--muted)}
+.sticky{position:sticky;top:calc(env(safe-area-inset-top, 0px) + 12px)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+/* Week 4: survey scales, results charts */
+.scale{display:grid;grid-template-columns:minmax(0,1fr);gap:4px;padding:12px 0;border-top:1px solid var(--line)}
+.scale .q{font-weight:600}
+.scale .q small{display:block;font-weight:400;color:var(--muted);font-size:12.5px}
+.seg{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px;max-width:560px}
+.seg label{position:relative}
+.seg input{position:absolute;opacity:0;inset:0;margin:0}
+.seg span{display:grid;place-items:center;height:34px;border:1px solid var(--line);border-radius:4px;background:var(--bg);font:600 13.5px var(--f-mono);cursor:pointer}
+.seg input:checked+span{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.seg input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.ends{display:flex;justify-content:space-between;max-width:560px;font-size:12px;color:var(--muted)}
+.kpis{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 14px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 14px;min-width:140px}
+.kpi b{display:block;font:700 24px var(--f-display)}
+.kpi small{color:var(--muted);font-size:12.5px}
+.bars{display:grid;grid-template-columns:minmax(120px,190px) minmax(0,1fr) 54px;gap:6px 10px;align-items:center;font-size:13.5px}
+.bars .track{height:16px;background:var(--soft);border-radius:3px;position:relative;overflow:hidden}
+.bars .fill{position:absolute;top:0;bottom:0;left:0;background:var(--accent);border-radius:3px}
+.bars .val{font-family:var(--f-mono);font-size:12.5px;text-align:right}
+.rbars .track{background:var(--soft)}
+.rbars .mid{position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--muted)}
+.rbars .fill.pos{left:50%;background:var(--accent)}
+.rbars .fill.neg{background:var(--bad)}
+.scope{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin:0 0 14px}
+.matrix{border-collapse:collapse;font:12.5px var(--f-mono);margin-top:8px}
+.matrix th,.matrix td{padding:5px 7px;text-align:center;border:1px solid var(--line)}
+.matrix th{font-weight:500;color:var(--muted)}
+.tablewrap{overflow-x:auto}
+.note{font-size:13px;color:var(--muted);margin:8px 0 0}
+.done-banner{background:var(--ok-bg);color:var(--ok);border-radius:6px;padding:10px 12px;font-size:14px;margin-bottom:12px}
+.qrow{padding:12px 0;border-top:1px solid var(--line)}
+.qrow .lab{font-weight:600;display:block;margin-bottom:4px}
+.qrow .row{align-items:center}
+.taskcard{background:#361A54;color:#fff;border-radius:8px;padding:16px 18px;margin:14px 0 4px}
+.taskcard small{display:block;font:600 11.5px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:#FFD27A}
+.taskcard .tk{display:flex;flex-wrap:wrap;gap:10px 28px;margin-top:8px}
+.taskcard .tk div{font-size:13px;color:#EEDEFF}
+.taskcard .tk b{display:block;font:700 20px var(--f-display);color:#fff}
+.taskcard p{margin:10px 0 0;font-size:13px;color:#EEDEFF}
+.pstar{color:var(--accent);font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">BIDI0008 · Tutorial 4 · Post-occupancy evaluation</div>
+    <h1>POE Data Lab</h1>
+    <p class="save" style="margin:6px 0 0">Submit before your tutorial ends. Submissions up to 5 minutes late are accepted but marked late.</p>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true" data-tab="t1"><span class="n">1</span>Survey</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="t2"><span class="n">2</span>Data and results</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="t3"><span class="n">3</span>Analyse and submit</button>
+  </div>
+
+  <!-- TAB 1 -->
+  <section id="t1">
+    <p class="intro"><b>Collect the data.</b> Answer this short post-occupancy evaluation (POE) survey about the lecture hall you like best out of the three below. Your answers are anonymous and are added to the class dataset that you will analyse in Tab 2 and Tab 3. It takes about 5 minutes.</p>
+    <div id="surveyDone" class="done-banner" hidden>Thank you. Your survey answers have been recorded. Continue to Tab 2.</div>
+    <form id="survey" class="card" novalidate>
+      <div class="row" style="margin-bottom:12px">
+        <div class="field"><label class="lab" for="sv-tut" style="font-weight:600">Tutorial group</label>
+          <select id="sv-tut"><option value="">Choose…</option><option>T1</option><option>T2</option><option>T3</option><option>T4</option></select></div>
+        <div class="field"><label class="lab" for="sv-loc" style="font-weight:600">Which lecture hall do you like best?</label>
+          <select id="sv-loc"></select></div>
+      </div>
+      <div class="sec-lab" style="margin-top:6px">In that lecture hall, how satisfied are you with…</div>
+      <div id="scales"></div>
+      <div class="row" style="margin-top:14px"><button class="btn" type="submit" id="svBtn" disabled>Submit survey</button><span class="save" id="svNote"></span></div>
+      <div id="svMsg"></div>
+    </form>
+  </section>
+
+  <!-- TAB 2 -->
+  <section id="t2" hidden>
+    <p class="intro"><b>Explore the data.</b> Download the data as a CSV file and analyse it in Jamovi (see the steps on the tutorial slides). The summary below shows the same data and can be used to check your results, or if Jamovi is not available.</p>
+    <div class="card" style="margin-bottom:16px">
+      <div class="scope">
+        <div class="field"><label for="scope"><small>Dataset</small></label>
+          <select id="scope"><option value="mine">My tutorial group</option><option value="all">All tutorial groups today</option><option value="example">Example data (practice)</option></select></div>
+        <button class="btn ghost" type="button" id="refresh">Refresh</button>
+        <button class="btn" type="button" id="dl">Download CSV for Jamovi</button>
+      </div>
+      <div class="note" id="dataNote"></div>
+    </div>
+    <div class="kpis" id="kpis"></div>
+    <div class="grid2" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr)">
+      <div class="card"><h3>Mean satisfaction (1–10)</h3><div class="bars" id="means" style="margin-top:12px"></div></div>
+      <div class="card"><h3>Correlation with concentration (r)</h3><p class="note" style="margin-top:4px">−1 = opposite direction · 0 = no relationship · +1 = same direction</p><div class="bars rbars" id="corrs" style="margin-top:10px"></div></div>
+    </div>
+    <div class="card" style="margin-top:16px"><h3>Mean concentration by lecture hall</h3><div class="bars" id="byloc" style="margin-top:12px"></div></div>
+    <details class="card" style="margin-top:16px"><summary style="cursor:pointer;font-weight:600">Full correlation matrix</summary><div class="tablewrap" id="matrix"></div></details>
+  </section>
+
+  <!-- TAB 3 -->
+  <section id="t3" hidden>
+    <p class="intro"><b>Your personal task.</b> Everyone gets a different task, based on your student number. You may sit and work with a partner, but each student submits their own task.</p>
+    <div class="grid2">
+      <div class="card">
+        <form id="subForm" novalidate>
+          <div class="qrow" style="border-top:0;padding-top:0">
+            <span class="lab">Your details</span>
+            <div class="row">
+              <div class="field"><label for="s-tut"><small>Tutorial group</small></label>
+                <select id="s-tut"><option value="">Choose…</option><option>T1</option><option>T2</option><option>T3</option><option>T4</option></select></div>
+              <div class="field"><label for="p1-num"><small>Student number</small></label><input type="text" id="p1-num" inputmode="numeric" autocomplete="off" style="width:160px"></div>
+            </div>
+            <div class="row" style="margin-top:8px">
+              <div class="field" style="flex:1;min-width:200px"><label for="p1-name"><small>Full name</small></label><input type="text" id="p1-name" autocomplete="off"></div>
+              <div class="field" style="flex:1;min-width:200px"><label for="p1-mail"><small>UCL email</small></label><input type="email" id="p1-mail" autocomplete="off"></div>
+            </div>
+            <div class="save" id="dlNote" style="margin-top:6px"></div>
+          </div>
+          <div id="taskCard" class="taskcard" hidden></div>
+          <div id="taskQs" hidden>
+            <div class="qrow">
+              <span class="lab">1 · Dataset and tool</span>
+              <div class="row">
+                <div class="field"><label for="a-data"><small>Dataset analysed</small></label><select id="a-data"><option value="">Choose…</option><option>My tutorial group</option><option>All tutorial groups today</option><option>Example data (practice)</option></select></div>
+                <div class="field"><label for="a-tool"><small>Tool used</small></label><select id="a-tool"><option value="">Choose…</option><option>jamovi (desktop)</option><option>jamovi Cloud</option><option>Website summary (Tab 2)</option><option>Other (e.g. Excel)</option></select></div>
+                <div class="field"><label for="a-n"><small>Total responses (n)</small></label><input type="number" min="1" id="a-n" style="width:110px"></div>
+              </div>
+            </div>
+            <div class="qrow">
+              <span class="lab" id="q2lab">2 · Mean concentration in your lecture hall</span>
+              <div class="row">
+                <div class="field"><label for="a-hn"><small>N for your hall</small></label><input type="number" min="0" id="a-hn" style="width:110px"></div>
+                <div class="field"><label for="a-hm"><small>Mean concentration (2 decimals)</small></label><input type="number" step="0.01" min="1" max="10" id="a-hm" style="width:140px"></div>
+              </div>
+            </div>
+            <div class="qrow">
+              <span class="lab" id="q3lab">3 · Correlation between your factor and concentration</span>
+              <div class="row">
+                <div class="field"><label for="a-r"><small>Pearson’s r (2 decimals)</small></label><input type="number" step="0.01" min="-1" max="1" id="a-r" style="width:140px"></div>
+                <div class="field"><label for="a-p"><small>p-value</small></label><select id="a-p"><option value="">Choose…</option><option value="lt05">p &lt; .05 (significant)</option><option value="ge05">p ≥ .05 (not significant)</option></select></div>
+              </div>
+            </div>
+            <div class="qrow">
+              <label class="lab" for="a-int" id="q4lab">4 · Interpretation</label>
+              <textarea id="a-int" placeholder="How strong is the relationship, and in which direction? Does it show cause and effect? Consider the sample size and how the data was collected."></textarea>
+            </div>
+            <div class="qrow">
+              <label class="lab" for="a-req" id="q5lab">5 · One requirement for your lecture hall</label>
+              <textarea id="a-req" placeholder="Use your factor and the evidence above. You can also compare with your own survey rating."></textarea>
+            </div>
+          </div>
+          <div class="row" style="margin-top:14px"><button class="btn" type="submit" id="subBtn" disabled>Submit</button></div>
+          <div id="subMsg"></div>
+          <p class="save" style="margin-top:12px">Your name, student number, email address and answers are sent only to your BIDI0008 tutor and are used to record your participation in today’s tutorial. Your survey answers in Tab 1 are anonymous.</p>
+        </form>
+      </div>
+      <div class="card sticky">
+        <h3>Checklist before submission</h3>
+        <ul class="checklist" id="checklist"></ul>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+const EXAMPLE=[{"hall":"Chemistry LT","temperature":4,"air":4,"light":8,"noise":6,"acoustics":8,"visibility":6,"seating":6,"power_wifi":5,"concentration":6},{"hall":"Gustave Tuck LT","temperature":6,"air":5,"light":7,"noise":2,"acoustics":6,"visibility":6,"seating":1,"power_wifi":3,"concentration":6},{"hall":"Gustave Tuck LT","temperature":5,"air":6,"light":8,"noise":10,"acoustics":9,"visibility":8,"seating":5,"power_wifi":5,"concentration":8},{"hall":"Birkbeck B34","temperature":3,"air":3,"light":6,"noise":5,"acoustics":4,"visibility":4,"seating":10,"power_wifi":8,"concentration":3},{"hall":"Gustave Tuck LT","temperature":8,"air":5,"light":7,"noise":4,"acoustics":9,"visibility":8,"seating":1,"power_wifi":3,"concentration":8},{"hall":"Chemistry LT","temperature":7,"air":4,"light":6,"noise":6,"acoustics":9,"visibility":6,"seating":6,"power_wifi":7,"concentration":5},{"hall":"Birkbeck B34","temperature":6,"air":4,"light":7,"noise":2,"acoustics":7,"visibility":7,"seating":5,"power_wifi":8,"concentration":8},{"hall":"Chemistry LT","temperature":6,"air":6,"light":7,"noise":6,"acoustics":8,"visibility":7,"seating":6,"power_wifi":5,"concentration":9},{"hall":"Chemistry LT","temperature":7,"air":4,"light":7,"noise":6,"acoustics":7,"visibility":2,"seating":4,"power_wifi":6,"concentration":5},{"hall":"Chemistry LT","temperature":6,"air":6,"light":8,"noise":6,"acoustics":9,"visibility":6,"seating":4,"power_wifi":6,"concentration":7},{"hall":"Birkbeck B34","temperature":3,"air":7,"light":8,"noise":8,"acoustics":6,"visibility":5,"seating":6,"power_wifi":2,"concentration":5},{"hall":"Chemistry LT","temperature":7,"air":7,"light":9,"noise":7,"acoustics":7,"visibility":5,"seating":6,"power_wifi":3,"concentration":6},{"hall":"Chemistry LT","temperature":8,"air":2,"light":6,"noise":6,"acoustics":6,"visibility":8,"seating":5,"power_wifi":2,"concentration":6},{"hall":"Birkbeck B34","temperature":5,"air":5,"light":5,"noise":5,"acoustics":6,"visibility":7,"seating":7,"power_wifi":6,"concentration":5},{"hall":"Gustave Tuck LT","temperature":7,"air":7,"light":6,"noise":5,"acoustics":7,"visibility":5,"seating":2,"power_wifi":3,"concentration":6},{"hall":"Chemistry LT","temperature":3,"air":4,"light":8,"noise":3,"acoustics":7,"visibility":9,"seating":3,"power_wifi":7,"concentration":6},{"hall":"Birkbeck B34","temperature":5,"air":2,"light":3,"noise":4,"acoustics":7,"visibility":5,"seating":4,"power_wifi":5,"concentration":4},{"hall":"Birkbeck B34","temperature":6,"air":8,"light":4,"noise":6,"acoustics":8,"visibility":6,"seating":7,"power_wifi":8,"concentration":6},{"hall":"Birkbeck B34","temperature":6,"air":4,"light":5,"noise":4,"acoustics":5,"visibility":6,"seating":6,"power_wifi":6,"concentration":5},{"hall":"Birkbeck B34","temperature":1,"air":3,"light":6,"noise":4,"acoustics":6,"visibility":7,"seating":7,"power_wifi":7,"concentration":6},{"hall":"Gustave Tuck LT","temperature":5,"air":7,"light":8,"noise":7,"acoustics":10,"visibility":7,"seating":4,"power_wifi":4,"concentration":10},{"hall":"Gustave Tuck LT","temperature":9,"air":8,"light":5,"noise":6,"acoustics":6,"visibility":4,"seating":4,"power_wifi":3,"concentration":7},{"hall":"Gustave Tuck LT","temperature":6,"air":7,"light":6,"noise":10,"acoustics":7,"visibility":8,"seating":4,"power_wifi":5,"concentration":5},{"hall":"Gustave Tuck LT","temperature":3,"air":3,"light":5,"noise":6,"acoustics":6,"visibility":6,"seating":4,"power_wifi":4,"concentration":6},{"hall":"Chemistry LT","temperature":9,"air":6,"light":9,"noise":5,"acoustics":6,"visibility":6,"seating":5,"power_wifi":5,"concentration":6},{"hall":"Birkbeck B34","temperature":8,"air":3,"light":7,"noise":2,"acoustics":3,"visibility":3,"seating":8,"power_wifi":4,"concentration":3},{"hall":"Chemistry LT","temperature":6,"air":6,"light":7,"noise":3,"acoustics":8,"visibility":8,"seating":6,"power_wifi":1,"concentration":6},{"hall":"Chemistry LT","temperature":3,"air":1,"light":8,"noise":5,"acoustics":5,"visibility":9,"seating":7,"power_wifi":4,"concentration":5},{"hall":"Birkbeck B34","temperature":6,"air":5,"light":2,"noise":7,"acoustics":7,"visibility":5,"seating":5,"power_wifi":9,"concentration":5},{"hall":"Chemistry LT","temperature":4,"air":7,"light":5,"noise":5,"acoustics":8,"visibility":9,"seating":6,"power_wifi":5,"concentration":7},{"hall":"Birkbeck B34","temperature":3,"air":3,"light":8,"noise":2,"acoustics":4,"visibility":8,"seating":7,"power_wifi":6,"concentration":5},{"hall":"Birkbeck B34","temperature":4,"air":3,"light":10,"noise":7,"acoustics":6,"visibility":2,"seating":7,"power_wifi":7,"concentration":6},{"hall":"Birkbeck B34","temperature":5,"air":4,"light":7,"noise":5,"acoustics":5,"visibility":4,"seating":5,"power_wifi":8,"concentration":5},{"hall":"Gustave Tuck LT","temperature":3,"air":5,"light":8,"noise":8,"acoustics":8,"visibility":6,"seating":2,"power_wifi":6,"concentration":7},{"hall":"Gustave Tuck LT","temperature":6,"air":4,"light":8,"noise":9,"acoustics":9,"visibility":6,"seating":5,"power_wifi":1,"concentration":6},{"hall":"Chemistry LT","temperature":5,"air":3,"light":6,"noise":8,"acoustics":6,"visibility":7,"seating":6,"power_wifi":1,"concentration":5},{"hall":"Birkbeck B34","temperature":8,"air":2,"light":9,"noise":7,"acoustics":5,"visibility":3,"seating":8,"power_wifi":6,"concentration":4},{"hall":"Chemistry LT","temperature":4,"air":5,"light":8,"noise":6,"acoustics":6,"visibility":8,"seating":5,"power_wifi":3,"concentration":8},{"hall":"Chemistry LT","temperature":6,"air":7,"light":8,"noise":9,"acoustics":4,"visibility":6,"seating":4,"power_wifi":5,"concentration":6},{"hall":"Gustave Tuck LT","temperature":8,"air":8,"light":5,"noise":7,"acoustics":9,"visibility":5,"seating":6,"power_wifi":4,"concentration":9},{"hall":"Chemistry LT","temperature":5,"air":7,"light":9,"noise":5,"acoustics":5,"visibility":7,"seating":5,"power_wifi":3,"concentration":6},{"hall":"Gustave Tuck LT","temperature":6,"air":4,"light":7,"noise":8,"acoustics":10,"visibility":7,"seating":4,"power_wifi":4,"concentration":8},{"hall":"Gustave Tuck LT","temperature":4,"air":6,"light":6,"noise":8,"acoustics":9,"visibility":6,"seating":3,"power_wifi":3,"concentration":7},{"hall":"Gustave Tuck LT","temperature":3,"air":4,"light":7,"noise":7,"acoustics":7,"visibility":6,"seating":3,"power_wifi":4,"concentration":6},{"hall":"Gustave Tuck LT","temperature":6,"air":6,"light":7,"noise":8,"acoustics":6,"visibility":5,"seating":4,"power_wifi":1,"concentration":5},{"hall":"Gustave Tuck LT","temperature":6,"air":7,"light":5,"noise":9,"acoustics":6,"visibility":6,"seating":8,"power_wifi":3,"concentration":6},{"hall":"Chemistry LT","temperature":6,"air":5,"light":8,"noise":6,"acoustics":8,"visibility":4,"seating":2,"power_wifi":5,"concentration":6},{"hall":"Chemistry LT","temperature":4,"air":3,"light":6,"noise":8,"acoustics":4,"visibility":5,"seating":5,"power_wifi":6,"concentration":4},{"hall":"Chemistry LT","temperature":7,"air":5,"light":7,"noise":9,"acoustics":9,"visibility":7,"seating":10,"power_wifi":2,"concentration":8},{"hall":"Birkbeck B34","temperature":6,"air":5,"light":9,"noise":3,"acoustics":7,"visibility":9,"seating":8,"power_wifi":6,"concentration":6},{"hall":"Birkbeck B34","temperature":3,"air":2,"light":8,"noise":6,"acoustics":8,"visibility":4,"seating":6,"power_wifi":4,"concentration":6},{"hall":"Birkbeck B34","temperature":6,"air":3,"light":6,"noise":6,"acoustics":5,"visibility":8,"seating":6,"power_wifi":8,"concentration":6},{"hall":"Chemistry LT","temperature":7,"air":8,"light":8,"noise":7,"acoustics":8,"visibility":4,"seating":7,"power_wifi":6,"concentration":7},{"hall":"Gustave Tuck LT","temperature":6,"air":10,"light":9,"noise":7,"acoustics":8,"visibility":10,"seating":3,"power_wifi":4,"concentration":9},{"hall":"Chemistry LT","temperature":1,"air":7,"light":5,"noise":7,"acoustics":4,"visibility":7,"seating":7,"power_wifi":4,"concentration":5},{"hall":"Birkbeck B34","temperature":7,"air":4,"light":6,"noise":7,"acoustics":5,"visibility":2,"seating":5,"power_wifi":3,"concentration":5},{"hall":"Birkbeck B34","temperature":5,"air":4,"light":5,"noise":5,"acoustics":8,"visibility":6,"seating":7,"power_wifi":8,"concentration":6},{"hall":"Gustave Tuck LT","temperature":6,"air":4,"light":8,"noise":5,"acoustics":4,"visibility":4,"seating":7,"power_wifi":2,"concentration":3},{"hall":"Birkbeck B34","temperature":5,"air":2,"light":7,"noise":1,"acoustics":6,"visibility":5,"seating":3,"power_wifi":7,"concentration":5},{"hall":"Chemistry LT","temperature":6,"air":6,"light":7,"noise":5,"acoustics":5,"visibility":7,"seating":7,"power_wifi":5,"concentration":6}];
+(function(){
+const SUBMIT_URL = "";
+const KEY='bidi0008_t4_poe_v2';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const LOCS=[['Chemistry LT','Chemistry LT (XLG1), Christopher Ingold Building'],['Birkbeck B34','Room B34, Birkbeck Malet Street'],['Gustave Tuck LT','Gustave Tuck LT, Main Building']];
+const FACTORS=[['temperature','Temperature',''],['air','Air quality','e.g. freshness, no stuffiness'],['light','Lighting',''],['noise','Background noise','e.g. from outside, ventilation, other people'],['acoustics','Hearing the speaker clearly',''],['visibility','Seeing the screen and board',''],['seating','Seat and desk comfort',''],['power_wifi','Power sockets and Wi-Fi','']];
+const OUT=['concentration','Concentration','Overall, how well does this lecture hall help you to concentrate?'];
+const VARS=[...FACTORS.map(f=>f[0]),OUT[0]];
+const LABEL=Object.fromEntries([...FACTORS.map(f=>[f[0],f[1]]),[OUT[0],OUT[1]]]);
+
+/* ---------- state ---------- */
+let D={sv:{},surveyDone:false,tut:'',t3:{},mode:''};
+try{const r=localStorage.getItem(KEY);if(r){const d=JSON.parse(r);if(d&&typeof d==='object')D=Object.assign(D,d)}}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}};
+
+/* ---------- Tab 1: survey ---------- */
+const opt=(arr,v,ph='Choose…')=>`<option value="">${ph}</option>`+arr.map(([val,lab])=>`<option value="${esc(val)}"${val===v?' selected':''}>${esc(lab)}</option>`).join('');
+$('#sv-loc').innerHTML=opt(LOCS,D.sv.location);
+if(D.tut)$('#sv-tut').value=D.tut;
+function scaleHTML(k,q,sub,lo,hi){
+  return `<div class="scale" role="radiogroup" aria-label="${esc(q)}"><div class="q">${esc(q)}${sub?`<small>${esc(sub)}</small>`:''}</div>
+  <div class="seg">${Array.from({length:10},(_,i)=>`<label><input type="radio" name="${k}" value="${i+1}" ${+D.sv[k]===i+1?'checked':''} aria-label="${i+1}"><span>${i+1}</span></label>`).join('')}</div>
+  <div class="ends"><span>1 = ${esc(lo)}</span><span>10 = ${esc(hi)}</span></div></div>`;
+}
+$('#scales').innerHTML=FACTORS.map(([k,l,s])=>scaleHTML(k,l,s,'Very dissatisfied','Very satisfied')).join('')+
+  `<div class="sec-lab" style="margin-top:14px">Overall</div>`+scaleHTML(OUT[0],OUT[2],'','Not at all well','Extremely well');
+function svMissing(){const m=[];if(!$('#sv-tut').value)m.push('tutorial group');if(!$('#sv-loc').value)m.push('lecture hall');
+  const left=VARS.filter(k=>!D.sv[k]).length;if(left)m.push(`${left} rating${left>1?'s':''}`);return m}
+function svRefresh(){
+  if(D.surveyDone){$('#surveyDone').hidden=false;$('#survey').querySelectorAll('input,select,button').forEach(x=>x.disabled=true);$('#svNote').textContent='';return}
+  const m=svMissing();$('#svBtn').disabled=!!m.length;$('#svNote').textContent=m.length?'Still to answer: '+m.join(', '):'Ready to submit';
+}
+$('#survey').addEventListener('change',e=>{
+  const t=e.target;
+  if(t.name&&VARS.includes(t.name))D.sv[t.name]=+t.value;
+  if(t.id==='sv-loc')D.sv.location=t.value;
+  if(t.id==='sv-tut'){D.tut=t.value;if(!$('#s-tut').value){$('#s-tut').value=t.value;D.t3['s-tut']=t.value}}
+  save();svRefresh();
+});
+$('#survey').addEventListener('submit',async e=>{
+  e.preventDefault();if(svMissing().length||D.surveyDone)return;
+  const btn=$('#svBtn'),msg=(c,t)=>$('#svMsg').innerHTML=`<div class="msg ${c}">${t}</div>`;
+  if(!SUBMIT_URL){msg('bad','Submission is not yet available. Please inform your tutor.');return}
+  btn.disabled=true;btn.textContent='Sending…';
+  const payload={week:'Tutorial 4',kind:'survey',tutorial:$('#sv-tut').value,hall:D.sv.location};
+  VARS.forEach(k=>payload[k]=D.sv[k]);
+  try{
+    const res=await fetch(SUBMIT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
+    const out=await res.json();if(!out.ok)throw new Error(out.error||'not saved');
+    D.surveyDone=true;save();svRefresh();msg('ok','Recorded. Thank you.');
+    $('#scope').value='mine';showTab('t2');loadData();
+  }catch(err){btn.disabled=false;btn.textContent='Submit survey';msg('bad','Your answers could not be sent. Please check your internet connection and press Submit survey again. If the problem continues, please inform your tutor.')}
+});
+
+/* ---------- Tab 2: data and results ---------- */
+let ROWS=[],SCOPE='';
+const mean=a=>a.reduce((s,x)=>s+x,0)/a.length;
+function pearson(a,b){const n=a.length;if(n<3)return NaN;const ma=mean(a),mb=mean(b);let sxy=0,sxx=0,syy=0;for(let i=0;i<n;i++){const x=a[i]-ma,y=b[i]-mb;sxy+=x*y;sxx+=x*x;syy+=y*y}return sxx&&syy?sxy/Math.sqrt(sxx*syy):NaN}
+const f2=x=>isNaN(x)?'–':x.toFixed(2);
+function ibeta(x,a,b){if(x<=0)return 0;if(x>=1)return 1;const lbt=lgamma(a+b)-lgamma(a)-lgamma(b)+a*Math.log(x)+b*Math.log(1-x);
+  const bt=Math.exp(lbt);return x<(a+1)/(a+b+2)?bt*betacf(x,a,b)/a:1-bt*betacf(1-x,b,a)/b}
+function betacf(x,a,b){let qab=a+b,qap=a+1,qam=a-1,c=1,d=1-qab*x/qap;if(Math.abs(d)<1e-30)d=1e-30;d=1/d;let h=d;
+  for(let m=1;m<=200;m++){const m2=2*m;let aa=m*(b-m)*x/((qam+m2)*(a+m2));d=1+aa*d;if(Math.abs(d)<1e-30)d=1e-30;c=1+aa/c;if(Math.abs(c)<1e-30)c=1e-30;d=1/d;h*=d*c;
+    aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));d=1+aa*d;if(Math.abs(d)<1e-30)d=1e-30;c=1+aa/c;if(Math.abs(c)<1e-30)c=1e-30;d=1/d;const del=d*c;h*=del;if(Math.abs(del-1)<3e-12)break}return h}
+function lgamma(z){const g=[676.5203681218851,-1259.1392167224028,771.32342877765313,-176.61502916214059,12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+  if(z<0.5)return Math.log(Math.PI/Math.sin(Math.PI*z))-lgamma(1-z);z-=1;let x=0.99999999999980993;for(let i=0;i<8;i++)x+=g[i]/(z+i+1);const t=z+7.5;return 0.5*Math.log(2*Math.PI)+(z+0.5)*Math.log(t)-t+Math.log(x)}
+function pval(r,n){if(isNaN(r)||n<3)return NaN;const df=n-2;if(Math.abs(r)>=1)return 0;const t2=r*r*df/(1-r*r);return ibeta(df/(df+t2),df/2,0.5)}
+
+function tutChosen(){return $('#s-tut').value||$('#sv-tut').value||D.tut}
+async function loadData(){
+  const sc=$('#scope').value;const note=$('#dataNote');
+  if(sc==='example'){ROWS=EXAMPLE.map(r=>Object.assign({tutorial:'example',location:r.hall},r));SCOPE='example';note.textContent='Example data: 60 made-up responses for practice. Use the class data for your answers if it has enough responses.';render();return}
+  if(!SUBMIT_URL){note.textContent='The class data is not available yet. Use the example data to practise.';ROWS=[];render();return}
+  const t=sc==='all'?'all':tutChosen();
+  if(!t){note.textContent='Select your tutorial group (Tab 1 or Tab 3) to see your group’s data.';ROWS=[];render();return}
+  note.textContent='Loading…';
+  try{const r=await fetch(SUBMIT_URL+'?data=week4&tutorial='+encodeURIComponent(t));const j=await r.json();
+    ROWS=(j.rows||[]).filter(x=>VARS.every(k=>+x[k]>=1&&+x[k]<=10)).map(x=>{const o={tutorial:x.tutorial,location:x.hall};VARS.forEach(k=>o[k]=+x[k]);return o});
+    SCOPE=t;note.textContent=`${sc==='all'?'All tutorial groups today':'Tutorial group '+t}: ${ROWS.length} response${ROWS.length===1?'':'s'}. Press Refresh to include new responses.`;
+  }catch(e){note.textContent='The data could not be loaded. Check your connection and press Refresh, or use the example data.';ROWS=[]}
+  render();
+}
+function bar(label,val,max,txt){const w=Math.max(0,Math.min(100,val/max*100));return `<div>${esc(label)}</div><div class="track"><div class="fill" style="width:${w}%"></div></div><div class="val">${txt}</div>`}
+function rbar(label,r,p){if(isNaN(r))return `<div>${esc(label)}</div><div class="track"><div class="mid"></div></div><div class="val">–</div>`;
+  const w=Math.abs(r)*50;return `<div>${esc(label)}</div><div class="track"><div class="mid"></div><div class="fill ${r>=0?'pos':'neg'}" style="width:${w}%;${r<0?`left:${50-w}%`:''}"></div></div><div class="val">${f2(r)}${p<.05?'<span class="pstar">*</span>':'&nbsp;'}</div>`}
+function render(){
+  const n=ROWS.length;
+  const kp=$('#kpis'),m=$('#means'),c=$('#corrs'),bl=$('#byloc'),mx=$('#matrix');
+  if(n<3){kp.innerHTML=`<div class="kpi"><b>${n}</b><small>responses</small></div>`;const t='<p class="note" style="grid-column:1/-1">Not enough responses yet (at least 3 are needed). Wait for more responses and press Refresh, or select the example data.</p>';m.innerHTML=t;c.innerHTML=t;bl.innerHTML=t;mx.innerHTML='';return}
+  const P=ROWS.map(r=>r.concentration);
+  kp.innerHTML=`<div class="kpi"><b>${n}</b><small>responses</small></div><div class="kpi"><b>${f2(mean(P))}</b><small>mean concentration (1–10)</small></div><div class="kpi"><b>${new Set(ROWS.map(r=>r.location)).size}</b><small>lecture halls</small></div>`+(n<30?`<div class="kpi" style="border-color:var(--bad)"><b style="color:var(--bad)">n &lt; 30</b><small>interpret with caution</small></div>`:'');
+  m.innerHTML=VARS.map(k=>bar(LABEL[k],mean(ROWS.map(r=>r[k])),10,f2(mean(ROWS.map(r=>r[k]))))).join('');
+  c.innerHTML=FACTORS.map(([k,l])=>[l,pearson(ROWS.map(r=>r[k]),P)]).sort((a,b)=>(isNaN(b[1])?-2:b[1])-(isNaN(a[1])?-2:a[1])).map(([l,r])=>rbar(l,r,pval(r,n))).join('')+'<p class="note" style="grid-column:1/-1"><span class="pstar">*</span> p &lt; .05 (significant)</p>';
+  bl.innerHTML=LOCS.map(([k,l])=>{const g=ROWS.filter(r=>r.location===k);return g.length?bar(`${k} (n=${g.length})`,mean(g.map(r=>r.concentration)),10,f2(mean(g.map(r=>r.concentration)))):''}).join('')||'<p class="note">No data.</p>';
+  mx.innerHTML=`<table class="matrix"><tr><th></th>${VARS.map(k=>`<th>${esc(k)}</th>`).join('')}</tr>${VARS.map(a=>`<tr><th style="text-align:left">${esc(a)}</th>${VARS.map(b=>{const r=a===b?1:pearson(ROWS.map(x=>x[a]),ROWS.map(x=>x[b]));const al=isNaN(r)?0:Math.abs(r)*.55;return `<td style="background:${r>=0?`rgba(15,107,92,${al})`:`rgba(179,38,30,${al})`}">${a===b?'—':f2(r)}</td>`}).join('')}</tr>`).join('')}</table>`;
+}
+$('#scope').addEventListener('change',loadData);$('#refresh').addEventListener('click',loadData);
+$('#dl').addEventListener('click',()=>{
+  if(!ROWS.length){$('#dataNote').textContent='There is no data to download yet.';return}
+  const cols=['id','tutorial','hall',...VARS];
+  const lines=[cols.join(',')].concat(ROWS.map((r,i)=>cols.map(c=>{const v=c==='id'?i+1:c==='hall'?r.location:r[c];return /[",\n]/.test(String(v))?`"${String(v).replace(/"/g,'""')}"`:v}).join(',')));
+  const blob=new Blob([lines.join('\n')+'\n'],{type:'text/csv'});const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download=`week4_poe_${SCOPE==='example'?'example':SCOPE==='all'?'all_groups':SCOPE}.csv`;document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);
+});
+
+/* ---------- personal task (same rule in the Apps Script) ---------- */
+function fnv(s){let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}h^=h>>>16;h=Math.imul(h,0x85ebca6b)>>>0;h^=h>>>13;h=Math.imul(h,0xc2b2ae35)>>>0;h^=h>>>16;return h>>>0}
+function taskFor(num){const h=fnv('bidi0008-w4-'+num);return {factor:FACTORS[h%FACTORS.length][0],hall:LOCS[Math.floor(h/FACTORS.length)%LOCS.length][0]}}
+
+/* ---------- Tab 3: personal task and submit ---------- */
+const T3=['s-tut','p1-name','p1-num','p1-mail','a-data','a-tool','a-n','a-hn','a-hm','a-r','a-p','a-int','a-req'];
+const v=id=>$('#'+id).value.trim();
+T3.forEach(id=>{if(D.t3[id]!=null)$('#'+id).value=D.t3[id];const h=()=>{D.t3[id]=$('#'+id).value;if(id==='s-tut'&&!D.tut)D.tut=$('#'+id).value;save();if(id==='p1-num')showTask();refresh()};$('#'+id).addEventListener('input',h);$('#'+id).addEventListener('change',h)});
+if(!$('#s-tut').value&&D.tut)$('#s-tut').value=D.tut;
+const okNum=x=>/^\d{6,10}$/.test(x),okMail=x=>/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(x),filled=(s,n=10)=>String(s||'').trim().length>=n;
+let TASK=null;
+function showTask(){
+  const num=v('p1-num');TASK=okNum(num)?taskFor(num):null;
+  $('#taskCard').hidden=!TASK;$('#taskQs').hidden=!TASK;
+  if(!TASK)return;
+  const hallLab=LOCS.find(x=>x[0]===TASK.hall)[1],fl=LABEL[TASK.factor];
+  $('#taskCard').innerHTML=`<small>Your task · student ${esc(num)}</small><div class="tk"><div>Your lecture hall<b>${esc(TASK.hall)}</b>${esc(hallLab)}</div><div>Your factor<b>${esc(fl)}</b>variable: ${esc(TASK.factor)}</div></div><p>Use jamovi Step 2 for your lecture hall and Step 3 for your factor. If your hall has fewer than 3 responses in your tutorial group’s data, use “All tutorial groups today”.</p>`;
+  $('#q2lab').textContent=`2 · Mean concentration in ${TASK.hall}`;
+  $('#q3lab').textContent=`3 · Correlation between ${fl} and concentration`;
+  $('#q4lab').textContent=`4 · Interpretation: what does the result for ${fl} show, and does it show cause and effect?`;
+  $('#q5lab').textContent=`5 · One requirement for ${TASK.hall}, based on ${fl}`;
+}
+showTask();
+
+/* closing time for each tutorial group, from the receiver so every device uses the same clock */
+let SESS=null,skew=0;
+const loadSess=()=>SUBMIT_URL?fetch(SUBMIT_URL+'?sessions=week4').then(r=>r.json()).then(j=>{if(j.sessions){SESS=j.sessions;skew=(j.now||Date.now())-Date.now();refresh()}}).catch(()=>{}):Promise.resolve();
+loadSess();
+const nowS=()=>Date.now()+skew;
+const hm=t=>new Date(t).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/London'});
+function deadline(){const g=v('s-tut'),s=SESS&&SESS[g];if(!s)return null;const until=s.lateUntil||s.end;return{g,end:s.end,until,late:nowS()>s.end,closed:nowS()>until,left:s.end-nowS()}}
+setInterval(()=>{if(!sent)refresh()},15000);
+
+let sent=false;
+function status(){
+  const hmv=+v('a-hm'),r=v('a-r')===''?NaN:+v('a-r');
+  const st=[
+    ['Tutorial group selected',!!v('s-tut'),''],
+    ['Full name, student number (digits only) and UCL email',!!v('p1-name')&&okNum(v('p1-num'))&&okMail(v('p1-mail')),'']];
+  if(TASK){
+    st.push(['Q1: dataset, tool and n',!!(v('a-data')&&v('a-tool')&&+v('a-n')>0),'']);
+    st.push([`Q2: N and mean for ${TASK.hall}`,v('a-hn')!==''&&hmv>=1&&hmv<=10,'']);
+    st.push(['Q3: r (between −1 and 1) and p-value',!isNaN(r)&&r>=-1&&r<=1&&!!v('a-p'),'']);
+    st.push(['Q4: interpretation',filled(v('a-int'),20),'']);
+    st.push(['Q5: requirement',filled(v('a-req'),15),'']);
+  } else st.push(['Enter your student number to see your task',false,'']);
+  const dl=deadline();
+  if(dl)st.push([`Before submissions close (${hm(dl.until)})`,!dl.closed,dl.closed?`submissions for ${dl.g} are closed`:'']);
+  return st;
+}
+function refresh(){
+  const st=status();
+  $('#checklist').innerHTML=st.map(([t,ok,d])=>`<li class="${ok?'done':'todo'}"><span class="ic">${ok?'✓':'!'}</span><span>${esc(t)}${d?` <small style="color:var(--muted)">(${esc(d)})</small>`:''}</span></li>`).join('');
+  if(!sent)$('#subBtn').disabled=!st.every(x=>x[1]);
+  const dl=deadline(),n=$('#dlNote');
+  if(sent||!dl){n.textContent='';return}
+  const mins=Math.ceil(dl.left/60000);
+  n.textContent=dl.closed?`Submissions for ${dl.g} closed at ${hm(dl.until)}. Late submissions are no longer accepted.`:
+    dl.late?`Your tutorial ended at ${hm(dl.end)}. You can still submit until ${hm(dl.until)}, but it will be marked late.`:
+    `Submissions for ${dl.g} close at ${hm(dl.end)} (${mins} min left).`;
+  n.style.color=dl.late||mins<=5?'var(--bad)':'';n.style.fontWeight=dl.late||mins<=5?'600':'';
+}
+const msg=(cls,t)=>{$('#subMsg').innerHTML=`<div class="msg ${cls}">${t}</div>`};
+$('#subForm').addEventListener('submit',async e=>{
+  e.preventDefault();refresh();if($('#subBtn').disabled||sent||!TASK)return;
+  if(!SUBMIT_URL){msg('bad','Submission is not yet available. Please inform your tutor.');return}
+  const btn=$('#subBtn');btn.disabled=true;btn.textContent='Sending…';
+  if(!SESS)await loadSess();
+  if(!SESS){btn.disabled=false;btn.textContent='Submit';msg('bad','Could not connect to the submission system. Please check your internet connection and press Submit again. If the problem continues, please inform your tutor.');return}
+  refresh();if(deadline()&&deadline().closed){btn.textContent='Closed';btn.disabled=true;msg('bad','Submissions for your tutorial are closed. Late submissions are not accepted.');return}
+  btn.disabled=true;btn.textContent='Sending…';
+  const payload={week:'Tutorial 4',kind:'answers',tutorial:v('s-tut'),
+    s1_name:v('p1-name'),s1_number:v('p1-num'),s1_email:v('p1-mail'),
+    task_hall:TASK.hall,task_factor:TASK.factor,
+    dataset:v('a-data'),tool:v('a-tool'),n:v('a-n'),hall_n:v('a-hn'),hall_mean:v('a-hm'),r:v('a-r'),p:v('a-p')==='lt05'?'p < .05':'p ≥ .05',
+    interpretation:v('a-int'),requirement:v('a-req')};
+  try{
+    const res=await fetch(SUBMIT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
+    const out=await res.json();
+    if(out.error==='closed'){btn.textContent='Closed';msg('bad',`Submissions for ${esc(payload.tutorial)} closed at ${esc(out.closedAt)}. Late submissions are no longer accepted. Please speak to your tutor.`);return}
+    if(!out.ok)throw new Error(out.error||'not saved');
+    sent=true;$('#dlNote').textContent='';btn.textContent='Submitted';msg(out.late?'bad':'ok',out.late?`Submitted, but marked late (${esc(out.minutesLate)} min after your tutorial ended). You may now close this page.`:'Submitted. Thank you. You may now close this page.');
+    document.querySelectorAll('#subForm input, #subForm select, #subForm textarea').forEach(i=>i.disabled=true);
+  }catch(err){btn.disabled=false;btn.textContent='Submit';msg('bad','Your answers could not be sent. Please check your internet connection and press Submit again. If the problem continues, please inform your tutor.')}
+});
+
+/* ---------- tabs ---------- */
+function showTab(id){document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x.dataset.tab===id));['t1','t2','t3'].forEach(t=>$('#'+t).hidden=t!==id);if(id==='t2'&&!ROWS.length)loadData();if(id==='t3')refresh();window.scrollTo({top:0})}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>showTab(t.dataset.tab));
+svRefresh();refresh();
+})();
+</script>
+</body>
+</html>
