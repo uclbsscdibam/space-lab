@@ -234,12 +234,16 @@ fieldset.pp legend{font-weight:600;padding:0 4px}
 
   <!-- TAB 3 -->
   <section id="t3" hidden>
-    <p class="intro"><b>Your personal task.</b> Everyone gets a different task, based on your student number. You may sit and work with a partner, but each student submits their own task.</p>
+    <p class="intro"><b>Your personal task.</b> Everyone gets a different task, based on your student number. You can work individually or in a pair. In a pair, submit once for both of you: your task is set by the student number of Student 1.</p>
     <div class="grid2">
       <div class="card">
         <form id="subForm" novalidate>
           <div class="qrow" style="border-top:0;padding-top:0">
             <span class="lab">Your details</span>
+            <div class="checks" id="modeSet" role="radiogroup" aria-label="Working arrangement" style="margin:2px 0 10px">
+              <label><input type="radio" name="mode" value="solo"> Individually</label>
+              <label><input type="radio" name="mode" value="pair"> In a pair</label>
+            </div>
             <div class="row">
               <div class="field"><label for="s-tut"><small>Tutorial group</small></label>
                 <select id="s-tut"><option value="">Choose…</option><option>T1</option><option>T2</option><option>T3</option><option>T4</option></select></div>
@@ -249,6 +253,15 @@ fieldset.pp legend{font-weight:600;padding:0 4px}
               <div class="field" style="flex:1;min-width:200px"><label for="p1-name"><small>Full name</small></label><input type="text" id="p1-name" autocomplete="off"></div>
               <div class="field" style="flex:1;min-width:200px"><label for="p1-mail"><small>UCL email</small></label><input type="email" id="p1-mail" autocomplete="off"></div>
             </div>
+            <fieldset class="pp" id="p2Set" hidden><legend>Student 2 (your partner)</legend>
+              <div class="row">
+                <div class="field"><label for="p2-num"><small>Student number</small></label><input type="text" id="p2-num" inputmode="numeric" autocomplete="off" style="width:160px"></div>
+              </div>
+              <div class="row" style="margin-top:8px">
+                <div class="field" style="flex:1;min-width:200px"><label for="p2-name"><small>Full name</small></label><input type="text" id="p2-name" autocomplete="off"></div>
+                <div class="field" style="flex:1;min-width:200px"><label for="p2-mail"><small>UCL email</small></label><input type="email" id="p2-mail" autocomplete="off"></div>
+              </div>
+            </fieldset>
             <div class="save" id="dlNote" style="margin-top:6px"></div>
           </div>
           <div id="taskCard" class="taskcard" hidden></div>
@@ -413,10 +426,13 @@ function fnv(s){let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);
 function taskFor(num){const h=fnv('bidi0008-w4-'+num);return {factor:FACTORS[h%FACTORS.length][0],hall:LOCS[Math.floor(h/FACTORS.length)%LOCS.length][0]}}
 
 /* ---------- Tab 3: personal task and submit ---------- */
-const T3=['s-tut','p1-name','p1-num','p1-mail','a-data','a-tool','a-n','a-hn','a-hm','a-r','a-p','a-int','a-req'];
+const T3=['s-tut','p1-name','p1-num','p1-mail','p2-name','p2-num','p2-mail','a-data','a-tool','a-n','a-hn','a-hm','a-r','a-p','a-int','a-req'];
 const v=id=>$('#'+id).value.trim();
 T3.forEach(id=>{if(D.t3[id]!=null)$('#'+id).value=D.t3[id];const h=()=>{D.t3[id]=$('#'+id).value;if(id==='s-tut'&&!D.tut)D.tut=$('#'+id).value;save();if(id==='p1-num')showTask();refresh()};$('#'+id).addEventListener('input',h);$('#'+id).addEventListener('change',h)});
 if(!$('#s-tut').value&&D.tut)$('#s-tut').value=D.tut;
+const pair=()=>D.mode==='pair';
+function applyMode(){document.querySelectorAll('input[name=mode]').forEach(r=>r.checked=r.value===D.mode);$('#p2Set').hidden=!pair();if(TASK)showTask()}
+document.querySelectorAll('input[name=mode]').forEach(r=>r.addEventListener('change',()=>{D.mode=r.value;save();applyMode();refresh()}));
 const okNum=x=>/^\d{6,10}$/.test(x),okMail=x=>/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(x),filled=(s,n=10)=>String(s||'').trim().length>=n;
 let TASK=null;
 function showTask(){
@@ -424,17 +440,17 @@ function showTask(){
   $('#taskCard').hidden=!TASK;$('#taskQs').hidden=!TASK;
   if(!TASK)return;
   const hallLab=LOCS.find(x=>x[0]===TASK.hall)[1],fl=LABEL[TASK.factor];
-  $('#taskCard').innerHTML=`<small>Your task · student ${esc(num)}</small><div class="tk"><div>Your lecture hall<b>${esc(TASK.hall)}</b>${esc(hallLab)}</div><div>Your factor<b>${esc(fl)}</b>variable: ${esc(TASK.factor)}</div></div><p>Use jamovi Step 2 for your lecture hall and Step 3 for your factor. If your hall has fewer than 3 responses in your tutorial group’s data, use “All tutorial groups today”.</p>`;
+  $('#taskCard').innerHTML=`<small>${pair()?'Your pair’s task':'Your task'} · student ${esc(num)}</small><div class="tk"><div>Your lecture hall<b>${esc(TASK.hall)}</b>${esc(hallLab)}</div><div>Your factor<b>${esc(fl)}</b>variable: ${esc(TASK.factor)}</div></div><p>Use jamovi Step 2 for your lecture hall and Step 3 for your factor. If your hall has fewer than 3 responses in your tutorial group’s data, use “All tutorial groups today”.</p>`;
   $('#q2lab').textContent=`2 · Mean concentration in ${TASK.hall}`;
   $('#q3lab').textContent=`3 · Correlation between ${fl} and concentration`;
   $('#q4lab').textContent=`4 · Interpretation: what does the result for ${fl} show, and does it show cause and effect?`;
   $('#q5lab').textContent=`5 · One requirement for ${TASK.hall}, based on ${fl}`;
 }
-showTask();
+showTask();applyMode();
 
 /* closing time for each tutorial group, from the receiver so every device uses the same clock */
-let SESS=null,skew=0;
-const loadSess=()=>SUBMIT_URL?fetch(SUBMIT_URL+'?sessions=week4').then(r=>r.json()).then(j=>{if(j.sessions){SESS=j.sessions;skew=(j.now||Date.now())-Date.now();refresh()}}).catch(()=>{}):Promise.resolve();
+let SESS=null,skew=0,PAIRS=false;
+const loadSess=()=>SUBMIT_URL?fetch(SUBMIT_URL+'?sessions=week4').then(r=>r.json()).then(j=>{if(j.sessions){SESS=j.sessions;PAIRS=!!j.pairs;skew=(j.now||Date.now())-Date.now();refresh()}}).catch(()=>{}):Promise.resolve();
 loadSess();
 const nowS=()=>Date.now()+skew;
 const hm=t=>new Date(t).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/London'});
@@ -448,7 +464,13 @@ function status(){
   const len=id=>v(id).length;
   const st=[['Tutorial group selected',!!v('s-tut'),'choose your tutorial group','s-tut']];
   const who=!v('p1-name')?['enter your full name','p1-name']:!okNum(num)?[num?'student number: digits only, no spaces or letters (6–10 digits)':'enter your student number','p1-num']:!okMail(v('p1-mail'))?[v('p1-mail')?'email address is not complete (e.g. name@ucl.ac.uk)':'enter your UCL email','p1-mail']:null;
-  st.push(['Full name, student number (digits only) and UCL email',!who,who?who[0]:'',who?who[1]:'']);
+  st.push(['Working arrangement selected (individually or in a pair)',!!D.mode,'choose individually or in a pair','modeSet']);
+  st.push([pair()?'Student 1: full name, student number (digits only) and UCL email':'Full name, student number (digits only) and UCL email',!who,who?who[0]:'',who?who[1]:'']);
+  if(pair()){
+    const n2=v('p2-num');
+    const who2=!v('p2-name')?['enter your partner’s full name','p2-name']:!okNum(n2)?[n2?'student number: digits only, no spaces or letters (6–10 digits)':'enter your partner’s student number','p2-num']:n2===num?['Student 2 must have a different student number from Student 1','p2-num']:!okMail(v('p2-mail'))?[v('p2-mail')?'email address is not complete (e.g. name@ucl.ac.uk)':'enter your partner’s UCL email','p2-mail']:null;
+    st.push(['Student 2: full name, student number and UCL email',!who2,who2?who2[0]:'',who2?who2[1]:'']);
+  }
   if(TASK){
     const q1=!v('a-data')?['choose the dataset you analysed','a-data']:!v('a-tool')?['choose the tool you used','a-tool']:!(+v('a-n')>0)?['enter the total number of responses (n)','a-n']:null;
     st.push(['Q1: dataset, tool and n',!q1,q1?q1[0]:'',q1?q1[1]:'']);
@@ -491,9 +513,12 @@ $('#subForm').addEventListener('submit',async e=>{
   const btn=$('#subBtn');btn.disabled=true;btn.textContent='Sending…';
   if(!SESS)await loadSess();
   if(!SESS){btn.disabled=false;btn.textContent='Submit';msg('bad','Could not connect to the submission system. Please check your internet connection and press Submit again. If the problem continues, please inform your tutor.');return}
+  if(pair()&&!PAIRS){btn.disabled=false;btn.textContent='Submit';msg('bad','Pair submissions are not switched on yet. Please inform your tutor, or choose “Individually” and submit separately.');return}
   btn.disabled=true;btn.textContent='Sending…';
   const payload={week:'Tutorial 4',kind:'answers',tutorial:v('s-tut'),
+    mode:pair()?'Pair':'Individual',
     s1_name:v('p1-name'),s1_number:v('p1-num'),s1_email:v('p1-mail'),
+    s2_name:pair()?v('p2-name'):'',s2_number:pair()?v('p2-num'):'',s2_email:pair()?v('p2-mail'):'',
     task_hall:TASK.hall,task_factor:TASK.factor,
     dataset:v('a-data'),tool:v('a-tool'),n:v('a-n'),hall_n:v('a-hn'),hall_mean:v('a-hm'),r:v('a-r'),p:v('a-p')==='lt05'?'p < .05':'p ≥ .05',
     interpretation:v('a-int'),requirement:v('a-req')};
