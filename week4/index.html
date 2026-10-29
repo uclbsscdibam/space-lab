@@ -525,7 +525,7 @@ $('#subForm').addEventListener('submit',async e=>{
     const res=await fetch(SUBMIT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
     const out=await res.json();
     if(!out.ok)throw new Error(out.error||'not saved');
-    sent=true;$('#dlNote').textContent='';btn.textContent='Submitted';msg(out.late?'bad':'ok',out.tooLate?`Submitted, but too late to count for attendance (${esc(out.minutesLate)} min after your tutorial ended). You may now close this page.`:out.late?`Submitted, but marked late (${esc(out.minutesLate)} min after your tutorial ended). You may now close this page.`:'Submitted. Thank you. You may now close this page.');
+    sent=true;$('#dlNote').textContent='';btn.textContent='Submitted';msg('ok','Submitted. Thank you. You may now close this page.');
     document.querySelectorAll('#subForm input, #subForm select, #subForm textarea').forEach(i=>i.disabled=true);
   }catch(err){btn.disabled=false;btn.textContent='Submit';msg('bad','Your answers could not be sent. Please check your internet connection and press Submit again. If it still does not work, take a screenshot of your completed work and email it to your tutor by 14:00 today.')}
 });
