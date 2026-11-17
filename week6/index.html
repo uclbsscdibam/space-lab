@@ -1,0 +1,947 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Space Requirements Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>html{color-scheme:light}body{margin:0}[hidden]{display:none!important}
+
+/* Layout: a planning worksheet — brief to read, method cards to fill, submit at the end */
+:root{
+  --bg:#f6f7f5; --panel:#ffffff; --ink:#1d2321; --muted:#5d6763; --line:#d8ddda; --soft:#eef1ef;
+  --accent:#0f6b5c; --accent-ink:#ffffff; --accent-bg:#e2f1ed;
+  --ok:#1f7a3a; --ok-bg:#e3f4e7; --bad:#b3261e; --bad-bg:#fbe7e5; --warn-bg:#fff4d6;
+  --quote:#6a4bb5; --quote-bg:#f1edfb;
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-body:"IBM Plex Sans","Segoe UI",Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141917; --panel:#1c2220; --ink:#e7ece9; --muted:#9aa5a0; --line:#323a37; --soft:#232a27;
+  --accent:#4fc2a8; --accent-ink:#0d1412; --accent-bg:#1b3530;
+  --ok:#7ad69a; --ok-bg:#1d3526; --bad:#ff8a80; --bad-bg:#3d2220; --warn-bg:#3a3220;
+  --quote:#b9a6f0; --quote-bg:#272238; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141917; --panel:#1c2220; --ink:#e7ece9; --muted:#9aa5a0; --line:#323a37; --soft:#232a27;
+  --accent:#4fc2a8; --accent-ink:#0d1412; --accent-bg:#1b3530;
+  --ok:#7ad69a; --ok-bg:#1d3526; --bad:#ff8a80; --bad-bg:#3d2220; --warn-bg:#3a3220;
+  --quote:#b9a6f0; --quote-bg:#272238; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1100px;margin:0 auto;padding-inline:16px;padding-block:20px 56px}
+header{border-bottom:2px solid var(--ink);padding-bottom:14px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(26px,4vw,38px);line-height:1.05;margin:4px 0 0;text-wrap:balance}
+h2{font-family:var(--f-display);font-weight:700;font-size:22px;margin:0;text-wrap:balance}
+h3{font-family:var(--f-display);font-weight:700;font-size:16px;margin:0}
+.tabs{display:flex;gap:4px;margin:18px 0 0;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{font:600 14px var(--f-body);color:var(--muted);background:none;border:0;border-bottom:3px solid transparent;padding:10px 14px;cursor:pointer;white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.tab .n{font-family:var(--f-mono);margin-right:6px;color:var(--accent)}
+.intro{max-width:72ch;color:var(--muted);margin:16px 0 18px}
+.intro b{color:var(--ink)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px}
+.stack{display:flex;flex-direction:column;gap:16px;min-width:0}
+.companies{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;margin-bottom:18px}
+.co{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:10px 12px;cursor:pointer;font:inherit}
+.co small{font-family:var(--f-mono);font-size:11.5px;color:var(--accent)}
+.co strong{font-size:15px}
+.co span{font-size:12.5px;color:var(--muted)}
+.co .plate{align-self:stretch;display:flex;align-items:center;justify-content:center;height:72px;background:#fff;border:1px solid #ecefed;border-radius:5px;padding:8px 10px;margin-bottom:6px}
+.co .plate img{max-height:100%;max-width:100%;display:block}
+.co .meta{font-size:12.5px;color:var(--muted)}
+.co .meta b{font-family:var(--f-mono);font-weight:500;font-size:11.5px;color:var(--accent);margin-right:6px}
+.bhead{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.bhead .plate{background:#fff;border:1px solid #ecefed;border-radius:6px;padding:10px 14px;height:84px;display:flex;align-items:center}
+.bhead .plate img{max-height:100%;max-width:300px;display:block}
+.chosen{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:6px;padding:12px 16px;margin-bottom:16px}
+.chosen .plate{background:#fff;border:1px solid #ecefed;border-radius:5px;padding:6px 10px;height:56px;display:flex;align-items:center}
+.chosen .plate img{max-height:100%;max-width:220px;display:block}
+.chosen .txt{flex:1;min-width:200px}
+.chosen .txt small{display:block;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.chosen .txt strong{font-size:17px}
+.co[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.brief{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px}
+@media (max-width:820px){.brief{grid-template-columns:minmax(0,1fr)}}
+.brief p{margin:6px 0 0;max-width:68ch}
+.sec-lab{font:600 12px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+table.teams{width:100%;border-collapse:collapse;font-size:14px}
+table.teams td{padding:6px 0;border-bottom:1px solid var(--line);vertical-align:top}
+table.teams td.num{font-family:var(--f-mono);text-align:right;padding-right:12px;width:44px}
+table.teams td.note{color:var(--muted);font-size:13px;padding-left:12px}
+ul.data{margin:0;padding-left:18px}ul.data li{margin:4px 0}
+.quote{background:var(--quote-bg);border-radius:6px;padding:10px 12px;margin:0 0 8px}
+.quote b{display:block;font-size:12.5px;color:var(--quote)}
+.quote q{font-style:italic}
+ol.opts{margin:6px 0 0;padding-left:20px}ol.opts li{margin:3px 0}
+.task{background:var(--accent-bg);border-radius:6px;padding:12px 14px;margin-top:4px}
+.task b{color:var(--ink)}
+.method{border-left:4px solid var(--accent)}
+.mhead{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:6px}
+.pill{font:600 12px var(--f-body);border-radius:999px;padding:3px 10px}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}.pill.todo{background:var(--warn-bg);color:var(--ink)}
+.step{display:grid;grid-template-columns:28px minmax(0,1fr);gap:4px 10px;padding:14px 0;border-top:1px solid var(--line)}
+.step .sn{font:700 13px var(--f-mono);color:var(--accent);padding-top:2px}
+.step label.lab,.step .lab{font-weight:600;display:block;margin-bottom:4px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.field{display:flex;flex-direction:column;gap:3px;min-width:0}
+.field small{color:var(--muted);font-size:12.5px}
+input[type=text],input[type=number],input[type=email],select,textarea{font:inherit;font-size:14.5px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:7px 9px;max-width:100%}
+textarea{width:100%;min-height:58px;resize:vertical}
+input[type=text].w100{width:100%}
+select{min-width:180px}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.qbox{background:var(--soft);border-radius:6px;padding:10px 12px;margin:8px 0}
+.qbox .qn{font:600 12px var(--f-mono);color:var(--muted);margin-bottom:4px}
+.qbox .qx{display:flex;gap:8px;align-items:center}
+.qbox .qx span{font-weight:400}
+.infoline{margin-top:6px;font-size:13px;color:var(--muted)}
+.glist{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(250px,100%),1fr));gap:3px 8px}
+.grow{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:2px 4px 2px 8px;border-radius:4px;background:var(--soft);min-height:32px}
+.grow label{display:flex;gap:6px;align-items:center;font-size:13.5px;line-height:1.25;min-width:0}
+.grow label small{color:var(--muted);font-size:11.5px;white-space:nowrap}
+.grow input[type=number],.grow input[type=text]{font-size:13.5px;padding:3px 6px;height:26px}
+.grow input[type=number]{width:58px;flex:none}
+.grow input:disabled{opacity:.4}
+.linkbtn{margin-left:auto;background:none;border:0;padding:0;font:500 12.5px var(--f-body);color:var(--bad);cursor:pointer;text-decoration:underline}
+.btn.small{font-size:13px;padding:5px 10px}
+.qbox .grid{display:grid;grid-template-columns:minmax(0,1fr);gap:6px}
+.tips{font-size:13px;background:var(--warn-bg);border-radius:6px;padding:8px 12px;margin:2px 0 6px}
+.tips ul{margin:4px 0 0;padding-left:18px}
+.checks{display:flex;flex-wrap:wrap;gap:6px 16px;margin-bottom:6px}
+.checks label{display:flex;gap:6px;align-items:center;font-size:14px}
+.btn{font:600 14px var(--f-body);background:var(--accent);color:var(--accent-ink);border:0;border-radius:4px;padding:9px 14px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn:disabled{background:var(--line);color:var(--muted);cursor:not-allowed}
+.msg{font-size:13.5px;border-radius:4px;padding:8px 10px;margin-top:10px}
+.msg.ok{background:var(--ok-bg);color:var(--ok)}.msg.bad{background:var(--bad-bg);color:var(--bad)}.msg.info{background:var(--warn-bg);color:var(--ink)}
+.missing{font-size:13px;color:var(--muted);margin:6px 0 0;padding-left:18px}
+.grid2{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:820px){.grid2{grid-template-columns:minmax(0,1fr)}}
+fieldset.pp{border:1px solid var(--line);border-radius:6px;padding:8px 14px 12px;margin:12px 0 0}
+fieldset.pp legend{font-weight:600;padding:0 4px}
+.checklist{list-style:none;margin:10px 0 0;padding:0}
+.checklist li{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px}
+.checklist .ic{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:12px}
+.checklist .done .ic{background:var(--ok-bg);color:var(--ok)}.checklist .todo .ic{background:var(--bad-bg);color:var(--bad)}
+.save{font-size:12.5px;color:var(--muted)}
+.sticky{position:sticky;top:calc(env(safe-area-inset-top, 0px) + 12px)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+
+/* Week 4: survey scales, results charts */
+.scale{display:grid;grid-template-columns:minmax(0,1fr);gap:4px;padding:12px 0;border-top:1px solid var(--line)}
+.scale .q{font-weight:600}
+.scale .q small{display:block;font-weight:400;color:var(--muted);font-size:12.5px}
+.seg{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px;max-width:560px}
+.seg label{position:relative}
+.seg input{position:absolute;opacity:0;inset:0;margin:0}
+.seg span{display:grid;place-items:center;height:34px;border:1px solid var(--line);border-radius:4px;background:var(--bg);font:600 13.5px var(--f-mono);cursor:pointer}
+.seg input:checked+span{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.seg input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.ends{display:flex;justify-content:space-between;max-width:560px;font-size:12px;color:var(--muted)}
+.kpis{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 14px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 14px;min-width:140px}
+.kpi b{display:block;font:700 24px var(--f-display)}
+.kpi small{color:var(--muted);font-size:12.5px}
+.bars{display:grid;grid-template-columns:minmax(120px,190px) minmax(0,1fr) 54px;gap:6px 10px;align-items:center;font-size:13.5px}
+.bars .track{height:16px;background:var(--soft);border-radius:3px;position:relative;overflow:hidden}
+.bars .fill{position:absolute;top:0;bottom:0;left:0;background:var(--accent);border-radius:3px}
+.bars .val{font-family:var(--f-mono);font-size:12.5px;text-align:right}
+.rbars .track{background:var(--soft)}
+.rbars .mid{position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--muted)}
+.rbars .fill.pos{left:50%;background:var(--accent)}
+.rbars .fill.neg{background:var(--bad)}
+.scope{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin:0 0 14px}
+.matrix{border-collapse:collapse;font:12.5px var(--f-mono);margin-top:8px}
+.matrix th,.matrix td{padding:5px 7px;text-align:center;border:1px solid var(--line)}
+.matrix th{font-weight:500;color:var(--muted)}
+.tablewrap{overflow-x:auto}
+.note{font-size:13px;color:var(--muted);margin:8px 0 0}
+.done-banner{background:var(--ok-bg);color:var(--ok);border-radius:6px;padding:10px 12px;font-size:14px;margin-bottom:12px}
+.qrow{padding:12px 0;border-top:1px solid var(--line)}
+.qrow .lab{font-weight:600;display:block;margin-bottom:4px}
+.qrow .row{align-items:center}
+.taskcard{background:#361A54;color:#fff;border-radius:8px;padding:16px 18px;margin:14px 0 4px}
+.taskcard small{display:block;font:600 11.5px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:#FFD27A}
+.taskcard .tk{display:flex;flex-wrap:wrap;gap:10px 28px;margin-top:8px}
+.taskcard .tk div{font-size:13px;color:#EEDEFF}
+.taskcard .tk b{display:block;font:700 20px var(--f-display);color:#fff}
+.taskcard p{margin:10px 0 0;font-size:13px;color:#EEDEFF}
+.pstar{color:var(--accent);font-weight:700}
+table.calc{width:100%;border-collapse:collapse;font-size:14px}
+table.calc th{font:600 12px var(--f-mono);letter-spacing:.04em;text-transform:uppercase;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:2px solid var(--line)}
+table.calc td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+table.calc input[type=number]{width:86px}
+table.calc select{min-width:150px}
+.kpi.over{border-color:var(--bad);background:var(--bad-bg)}.kpi.over b{color:var(--bad)}
+.kpi.fits{border-color:var(--ok);background:var(--ok-bg)}.kpi.fits b{color:var(--ok)}
+.palette{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.sw{display:flex;align-items:center;gap:6px;font:600 13px var(--f-body);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px 11px;cursor:pointer}
+.sw i{width:14px;height:14px;border-radius:3px;border:1px solid rgba(0,0,0,.25);display:inline-block}
+.sw.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.floorwrap{overflow-x:auto}
+.sheet{min-width:620px;background:#fff;color:#1d2321;border:1px solid var(--line);border-radius:4px;padding:10px}
+.planbox{position:relative}
+.floor{display:grid;background:#fbfbf9;touch-action:none;user-select:none}
+svg.arch{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;font-family:var(--f-mono)}
+.titleblock{display:flex;align-items:center;gap:16px;border-top:1px solid #c8ccc9;margin-top:6px;padding-top:6px;font-size:12px;color:#1d2321}
+.titleblock div{flex:1}.titleblock b{display:block;font:700 13px var(--f-display)}.titleblock span{color:#5d6763;font-family:var(--f-mono);font-size:11px}
+svg.north{width:34px;height:34px;color:#1d2321}.scl{font:11px var(--f-mono);color:#5d6763}
+.seg2{display:flex;flex-wrap:wrap;gap:8px}
+.seg2 label{display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:6px;padding:8px 12px;cursor:pointer;font-weight:600;font-size:14px}
+.seg2 label:has(input:checked){border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);background:var(--accent-bg)}
+.cell{border-right:1px dotted #d9dde0;border-bottom:1px dotted #d9dde0;cursor:crosshair;position:relative}
+.cell.fx{background:transparent!important;cursor:not-allowed;border-color:transparent}
+.cell.fx span{display:none}
+i.dot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:0}
+.opts{display:flex;flex-direction:column;gap:4px;margin-top:4px}
+.opt{display:flex;gap:8px;align-items:center;font-size:14px}
+.checklist a{color:var(--ink)}
+
+.orgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin-top:10px}
+.org{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--line);border-radius:6px;padding:9px 11px;cursor:pointer;background:var(--panel)}
+.org span{display:flex;flex-direction:column}.org small{color:var(--muted);font-size:12px;margin-top:2px}
+.org:has(input:checked){border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);background:var(--accent-bg)}
+.bldgs{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.bld{display:block;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;cursor:pointer}
+.bld.on{border-color:var(--ink);box-shadow:inset 0 0 0 2px var(--accent)}
+.bld .pic svg{width:100%;height:auto;display:block;border-radius:5px}
+.bld .bt{display:flex;gap:8px;align-items:center;margin:10px 0 4px;font-size:15px}
+.bld ul.data{font-size:13.5px}
+
+.plansrow{display:grid;grid-template-columns:1fr;gap:12px}
+.plansrow.two{grid-template-columns:1fr 1fr}
+.plancap{font:600 12px var(--f-mono);color:#5d6763;margin-top:4px;text-align:center}
+.credit{font-size:11px;color:var(--muted);margin-top:3px}
+.bld .pic img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:5px;display:block}
+.xrow td{background:var(--accent-bg)}
+.linkbtn.rmx{margin-left:6px}
+@media (max-width:820px){.plansrow.two{grid-template-columns:1fr}}
+
+#teamTable td:first-child{white-space:nowrap}
+#teamTable select{min-width:0;max-width:190px}
+.reqgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;margin-top:4px}
+.reqhead{font-size:12.5px;font-weight:600;color:var(--muted)}
+@media (max-width:640px){.reqgrid{grid-template-columns:1fr}.reqhead{display:none}}
+.deadline{margin:8px 0 0;padding:8px 12px;border-left:4px solid var(--accent);background:var(--bg);font-size:14px;border-radius:0 4px 4px 0}
+.prog{display:flex;align-items:center;gap:10px;margin:10px 0 0}
+.progbar{flex:1;height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.progbar span{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.progtxt{font-size:13px;font-weight:600;color:var(--muted);white-space:nowrap;min-width:92px;text-align:right}
+.tab .ok{margin-left:6px;color:var(--accent);font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">BIDI0008 · Tutorial 6 · Space requirements</div>
+    <h1>Space Requirements Lab</h1>
+    <div class="deadline" id="deadline"><b>Submit during your tutorial.</b> <span id="dlTxt">Deadline: the end of your tutorial on Friday 20 November (12:00 for T1 and T3, 13:00 for T2 and T4).</span></div>
+    <div class="prog" aria-label="Progress">
+      <div class="progbar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progBar"><span id="progFill"></span></div>
+      <span class="progtxt" id="progTxt">0% complete</span>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button class="tab" data-tab="t1" aria-selected="true"><span class="n">1</span>Organisation</button>
+      <button class="tab" data-tab="t2" aria-selected="false"><span class="n">2</span>Building selection</button>
+      <button class="tab" data-tab="t3" aria-selected="false"><span class="n">3</span>Space requirements</button>
+      <button class="tab" data-tab="t4" aria-selected="false"><span class="n">4</span>Zoning</button>
+      <button class="tab" data-tab="t5" aria-selected="false"><span class="n">5</span>Strategy and submit</button>
+    </nav>
+  </header>
+
+  <!-- TAB 1 -->
+  <section id="t1">
+    <p class="intro"><b>You are the workplace consultant.</b> An organisation is moving into about <b>400 m²</b> of new office space. First decide what kind of organisation it is. Work on your own or in a pair: a pair submits once, with both names.</p>
+    <div class="card">
+      <div class="seg2" role="radiogroup" aria-label="Working alone or in a pair">
+        <label><input type="radio" name="mode" value="1"> I am working on my own</label>
+        <label><input type="radio" name="mode" value="2"> We are working in a pair</label>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <div class="field"><label for="s-tut"><small>Tutorial group</small></label>
+          <select id="s-tut"><option value="">Choose…</option><option>T1</option><option>T2</option><option>T3</option><option>T4</option></select></div>
+        <div class="field"><label for="s-num"><small id="numLab">Student number</small></label><input type="text" id="s-num" inputmode="numeric" autocomplete="off" style="width:170px"></div>
+        <div class="field" id="s-num2-f" hidden><label for="s-num2"><small>Partner’s student number</small></label><input type="text" id="s-num2" inputmode="numeric" autocomplete="off" style="width:170px"></div>
+        <button class="btn" id="goCase" type="button">Start</button>
+      </div>
+      <div class="save" id="numNote" style="margin-top:6px">Your choice and student number(s) set your growth rates. They cannot be changed later in the page.</div>
+    </div>
+
+    <div id="caseBox" hidden>
+      <div class="taskcard">
+        <small>Your numbers</small>
+        <div class="tk" id="caseTk"></div>
+        <p>The numbers are set for you. What the organisation does, and what its teams are called, is up to you.</p>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <h3>1 · What kind of organisation is it?</h3>
+        <p class="note" style="margin-top:4px">Choose an example, or write your own. You can change the suggested team names.</p>
+        <div class="orgs" id="orgs"></div>
+        <div class="row" style="margin-top:12px">
+          <div class="field" style="flex:1;min-width:240px"><label for="o-name"><small>Name of the organisation (you can invent one)</small></label><input type="text" id="o-name" class="w100" autocomplete="off"></div>
+        </div>
+        <div class="field" style="margin-top:10px"><label for="o-desc"><small>What does it do? Who are its clients or users? (2–3 sentences)</small></label>
+          <textarea id="o-desc" placeholder="e.g. A tech start-up that builds a booking app for gyms. Its customers call for help during the day, and its sales team visits gym chains across the UK."></textarea></div>
+        <div class="field" style="margin-top:10px"><label for="o-vision"><small>Vision: what kind of workplace does it want? (1 sentence)</small></label>
+          <input type="text" id="o-vision" class="w100" autocomplete="off" placeholder="e.g. A place where customers, developers and sales meet and solve problems together."></div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <h3>2 · Name the teams and their functions</h3>
+        <p class="note" style="margin-top:4px">How each team uses its desks is given. Give each team a name and say what it does in your organisation.</p>
+        <div class="tablewrap"><table class="calc" id="teamTable"></table></div>
+        <div class="row" style="margin-top:10px"><button class="btn ghost small" type="button" id="addTeam">+ Add a team (optional)</button><span class="save">Extra teams are yours: set their size, growth and peak use. Up to 3.</span></div>
+      </div>
+      <div class="row" style="margin-top:14px"><button class="btn" type="button" data-go="t2">Next: choose the building →</button></div>
+    </div>
+  </section>
+
+  <!-- TAB 2 -->
+  <section id="t2" hidden>
+    <p class="intro"><b>Two buildings are on the shortlist.</b> Both offer about 400 m² in total. Compare them for <b>your</b> organisation, choose one, and explain why (Lecture 6: location, transport, amenities, access, floor plate).</p>
+    <div class="bldgs">
+      <label class="bld" data-b="A">
+        <div class="pic" id="picA"></div><div class="credit" id="credA"></div>
+        <div class="bt"><input type="radio" name="bld" value="A"> <b>A · City tower, Level 12</b></div>
+        <ul class="data">
+          <li><b>Location:</b> city centre, 3 minutes from a main-line and Underground station.</li>
+          <li><b>Amenities:</b> cafés, gyms and hotels nearby; shared reception on the ground floor.</li>
+          <li><b>Floor:</b> one floor of about 400 m² around a central core; windows on all four sides; views over the city.</li>
+          <li><b>Access:</b> by lift only; visitors sign in at the building reception.</li>
+          <li><b>Lease:</b> speculative office, ready to fit out; higher rent.</li>
+        </ul>
+      </label>
+      <label class="bld" data-b="B">
+        <div class="pic" id="picB"></div><div class="credit" id="credB"></div>
+        <div class="bt"><input type="radio" name="bld" value="B"> <b>B · Low-rise building by a park, two floors</b></div>
+        <ul class="data">
+          <li><b>Location:</b> edge of the city centre, 8 minutes’ walk from a station; bus stop outside.</li>
+          <li><b>Surroundings:</b> a busy main road at the front (north), a public park to the west, and a quieter side street at the back (south).</li>
+          <li><b>Floors:</b> the whole two-storey building: two narrow, deep floors (10.5 m wide × 22.5 m deep), about 200 m² each. Main stair and services in the middle of the floor, against the blank side wall, plus an escape stair at the back. <b>No lift.</b></li>
+          <li><b>Access and light:</b> own street entrance, step-free on the ground floor only. Windows on three sides (main road, park and side street); the east wall is shared with the next building.</li>
+          <li><b>Lease:</b> refurbished older building; lower rent; some traffic noise.</li>
+        </ul>
+      </label>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <label class="lab" for="b-why" style="font-weight:600">Why is this building better for your organisation? (2–3 sentences)</label>
+      <textarea id="b-why" style="margin-top:6px" placeholder="Link your choice to your organisation: its clients, staff, image, budget and ways of working."></textarea>
+    </div>
+    <div class="row" style="margin-top:14px"><button class="btn" type="button" data-go="t3">Next: desks and schedule →</button></div>
+  </section>
+
+  <!-- TAB 3 -->
+  <section id="t3" hidden>
+    <p class="intro"><b>Step 1: desks. Step 2: space.</b> Work out the desks yourself. The page then adds up the floor area from your schedule, so you can see whether it fits.</p>
+    <div class="card">
+      <h3>1 · From headcount to desks</h3>
+      <p class="note" style="margin-top:4px">Future headcount = now × (1 + growth), rounded to a whole person. Growth can be negative: the team gets smaller. Peak demand = future headcount × peak utilisation (1 decimal). Desks = your decision: peak demand plus a buffer, or fewer if you share more.</p>
+      <div class="tablewrap" style="margin-top:10px"><table class="calc" id="deskTable"></table></div>
+      <div class="row" style="margin-top:10px">
+        <div class="field"><label for="buf"><small>Buffer you used (%)</small></label><input type="number" id="buf" min="0" max="50" step="1" style="width:110px"></div>
+        <div class="kpi"><b id="kDesks">–</b><small>desks in total (incl. PA)</small></div>
+        <div class="kpi"><b id="kRatio">–</b><small>desks per person</small></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3>2 · Space requirements schedule</h3>
+      <p class="note" style="margin-top:4px">Planning allowances are simplified practice values for this exercise. In your assignment, cite a source or state your own assumption.</p>
+      <div class="tablewrap" style="margin-top:10px"><table class="calc" id="schedTable"></table></div>
+      <div class="kpis" style="margin-top:12px">
+        <div class="kpi"><b id="kSub">–</b><small>subtotal (m²)</small></div>
+        <div class="kpi"><b id="kTot">–</b><small>total with 20% primary circulation (m²)</small></div>
+        <div class="kpi" id="gapKpi"><b id="kGap">–</b><small id="kGapLab">compared with 400 m²</small></div>
+      </div>
+      <p class="note" id="gapNote"></p>
+    </div>
+    <div class="row" style="margin-top:14px"><button class="btn" type="button" data-go="t4">Next: zone your plan →</button></div>
+  </section>
+
+  <!-- TAB 4 -->
+  <section id="t4" hidden>
+    <p class="intro"><b>Colour your plan by zone.</b> This is the plan of the building you chose (the low-rise building has two floors, side by side). Choose a colour, then click or drag over the squares (1.5 m × 1.5 m = 2.25 m²). There is no right or wrong answer: what matters is your reasoning in Tab 5.</p>
+    <div class="card">
+      <div class="msg info" id="noBld" hidden>Choose a building in Tab 2 first.</div>
+      <div class="palette" id="palette"></div>
+      <div class="floorwrap"><div class="sheet">
+        <div id="plans"></div>
+        <div class="titleblock">
+          <div><b id="tbTitle">Your organisation</b><span id="tbSub">General arrangement · zoning study</span></div>
+          <svg class="north" viewBox="0 0 40 40" aria-label="North"><circle cx="20" cy="20" r="15" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M20 4 L26 24 L20 20 L14 24 Z" fill="currentColor"/><text x="20" y="38" font-size="8" text-anchor="middle" fill="currentColor">N</text></svg>
+          <span class="scl">Grid squares 1.5 m</span>
+        </div>
+      </div></div>
+      <div class="kpis" id="zoneKpis" style="margin-top:12px"></div>
+      <div class="row"><button class="btn ghost small" type="button" id="clearFloor">Clear all</button></div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3>Checklist from Lecture 6</h3>
+      <ul class="data" style="margin-top:6px">
+        <li>Keep clear routes from the entrance to both stairs (use the dark circulation colour).</li>
+        <li>Visitors near the entrance, so they do not cross quiet areas.</li>
+        <li>Quiet away from noisy (inside and outside the building); use buffers between them.</li>
+        <li id="ck7m">Desks within 7 m of a window (BREEAM Hea 01 view out, cited in Lecture 6).</li>
+        <li>Teams that work together sit together.</li>
+      </ul>
+    </div>
+    <div class="row" style="margin-top:14px"><button class="btn" type="button" data-go="t5">Next: decide and submit →</button></div>
+  </section>
+
+  <!-- TAB 5 -->
+  <section id="t5" hidden>
+    <p class="intro"><b>Decide, justify, submit.</b> Submit before your tutor shows the model answer. The model answer appears here after you submit.</p>
+    <div class="grid2">
+      <div class="card">
+        <form id="subForm" novalidate>
+          <div class="qrow" style="border-top:0;padding-top:0">
+            <span class="lab">Your details</span>
+            <div class="infoline" id="whoLine"></div>
+            <div class="row" style="margin-top:8px">
+              <div class="field" style="flex:1;min-width:200px"><label for="p-name"><small id="p1lab">Full name</small></label><input type="text" id="p-name" autocomplete="off"></div>
+              <div class="field" style="flex:1;min-width:200px"><label for="p-mail"><small>UCL email</small></label><input type="email" id="p-mail" autocomplete="off"></div>
+            </div>
+            <div class="row" id="p2row" style="margin-top:8px" hidden>
+              <div class="field" style="flex:1;min-width:200px"><label for="p2-name"><small>Partner’s full name</small></label><input type="text" id="p2-name" autocomplete="off"></div>
+              <div class="field" style="flex:1;min-width:200px"><label for="p2-mail"><small>Partner’s UCL email</small></label><input type="email" id="p2-mail" autocomplete="off"></div>
+            </div>
+          </div>
+          <div class="qrow">
+            <span class="lab">1 · Does your schedule fit?</span>
+            <div class="infoline" id="fitLine"></div>
+          </div>
+          <div class="qrow">
+            <span class="lab">2 · How did you close the gap? <small style="font-weight:400;color:var(--muted)">(tick all you used)</small></span>
+            <div class="opts" id="gapOpts"></div>
+            <label class="lab" for="a-gap" style="margin-top:10px">What did you change, and what do users lose?</label>
+            <textarea id="a-gap" placeholder="e.g. The sales team shares 10 touchdown desks because they are out of the office most of the time. They lose a fixed desk, so desks are booked through an app."></textarea>
+          </div>
+          <div class="qrow">
+            <span class="lab">3 · Three requirements <small style="font-weight:400;color:var(--muted)">what you need, and what it solves</small></span>
+            <div class="reqgrid">
+              <div class="reqhead">Requirement: what to provide</div>
+              <div class="reqhead">What it solves: so that …</div>
+              <textarea id="a-r1" placeholder="1. Provide two meeting rooms next to the reception"></textarea>
+              <textarea id="a-s1" placeholder="so that clients can be met without walking through the work areas"></textarea>
+              <textarea id="a-r2" placeholder="2. Provide …"></textarea>
+              <textarea id="a-s2" placeholder="so that …"></textarea>
+              <textarea id="a-r3" placeholder="3. Provide …"></textarea>
+              <textarea id="a-s3" placeholder="so that …"></textarea>
+            </div>
+          </div>
+          <div class="row" style="margin-top:14px"><button class="btn" type="submit" id="subBtn" disabled>Submit</button></div>
+          <div id="subMsg"></div>
+          <p class="save" style="margin-top:12px">Names, student numbers, email addresses and answers are sent only to the BIDI0008 teaching team and are used to record your participation in today’s tutorial.</p>
+        </form>
+      </div>
+      <div class="card sticky">
+        <h3>Checklist before submission</h3>
+        <ul class="checklist" id="checklist"></ul>
+      </div>
+    </div>
+
+    <div id="modelBox" hidden>
+      <div class="card" style="margin-top:16px;border-left:4px solid var(--accent)">
+        <div class="sec-lab">Model answer · worked example: Fieldstone Consulting (growth 25% · 10% · 50%)</div>
+        <h3>The correct calculation does not fit</h3>
+        <p>With a 10% buffer: 15 + 15 + 14 desks, plus the PA and the director’s office. With all the support space, the total is about 490 m², about 90 m² more than the floor.</p>
+        <h3 style="margin-top:12px">Three ways to close the gap</h3>
+        <ul class="data">
+          <li><b>Share more desks:</b> the 60% team 15 → 12 bookable; the 35% team 14 → 10 touchdown (about 35 m²).</li>
+          <li><b>Make rooms work harder:</b> the training room doubles as a large meeting room; drop two 8-person rooms (about 40 m²).</li>
+          <li><b>Smaller support space:</b> two focus rooms and four booths instead of three focus rooms.</li>
+          <li><b>Or ask for more space:</b> +90 m² ≈ 970 sq ft; at a practice rate of £70/sq ft, about £68,000 a year more.</li>
+        </ul>
+        <p class="note">Your growth rates are different, so your numbers will differ. Every option costs the users something: a strong answer chooses, says what users lose, and how it will be managed.</p>
+        <p class="note"><b>Now apply the same steps to Institution Z on your own.</b> Do not share your Institution Z numbers or text: the assignment is individual.</p>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+// BIDI0008 Tutorial 6 – Space Requirements Lab
+const SUBMIT_URL = "";
+const KEY = 'bidi0008-w6-v3';
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const TEAMS = [
+  {id:'t1', now:12, util:0.90, growth:[-25,25,50], note:'At desks most of the day'},
+  {id:'t2', now:20, util:0.60, growth:[-20,10,30], note:'Desk-based, some home working'},
+  {id:'t3', now:24, util:0.35, growth:[-25,25,50], note:'Often out of the office'}
+];
+const ORGS = [
+  {k:'Management consultancy', teams:['Business support','Analysts','Consultants'], fn:['Reception, phones, finance and HR','Data analysis and report writing','Advise clients, mostly at client sites']},
+  {k:'Tech start-up', teams:['Customer support','Developers','Sales and partnerships'], fn:['Answer customer calls and chats','Build and test the app','Visit clients and partners']},
+  {k:'Charity head office', teams:['Supporter care','Fundraising and finance','Programme officers'], fn:['Answer supporters by phone and email','Run campaigns and manage the money','Visit projects in the community']},
+  {k:'Architecture and design studio', teams:['Studio admin','Designers','Project architects'], fn:['Reception, bookings and finance','Design and drawing work','Site visits and client meetings']},
+  {k:'University department office', teams:['Student enquiries','Programme administrators','Academic advisers'], fn:['Help students at the front desk','Timetables, marks and records','Meet students and staff across campus']},
+  {k:'Other (my own idea)', teams:['','',''], fn:['','','']}
+];
+const tName = i => (D.tn && D.tn[i] && D.tn[i].trim()) || ('Team ' + (i+1));
+const SETTINGS = [
+  {id:'ws', name:'Workstations (all team desks + PA)', m2:5, auto:true},
+  {id:'office', name:'Leader’s office', m2:12, fixed:1},
+  {id:'m4', name:'Meeting room, 4 people', m2:10},
+  {id:'m8', name:'Meeting room, 8 people', m2:20},
+  {id:'train', name:'Training room, 16 people', m2:35},
+  {id:'focus', name:'Focus room, 1–2 people', m2:5},
+  {id:'booth', name:'Phone booth', m2:2},
+  {id:'break', name:'Breakout / tea point', m2:20},
+  {id:'recep', name:'Reception and visitor waiting', m2:15},
+  {id:'store', name:'Print, storage and lockers', m2:10}
+];
+const FLOOR_M2 = 400;
+const CELL_M2 = 2.25;
+// Building photos: put the files next to index.html. Leave credit empty for your own photos.
+const PHOTO = {A:{src:'bldA.jpg', credit:''}, B:{src:'bldB.jpg', credit:''}};
+const ZONES = [
+  {k:'Q', name:'Quiet / focus', col:'#7cc489'},
+  {k:'C', name:'Collaborative', col:'#f6c04d'},
+  {k:'S', name:'Social / noisy', col:'#f28b7b'},
+  {k:'P', name:'Private', col:'#a98cf5'},
+  {k:'V', name:'Visitors / public', col:'#6fb3e8'},
+  {k:'R', name:'Circulation', col:'#4a4f5c'},
+  {k:'.', name:'Erase', col:'transparent'}
+];
+const GAP_OPTS = ['Share more desks (lower desk ratio)', 'Make rooms work harder (multi-use)', 'Smaller or fewer support spaces', 'Ask for more space (and pay for it)', 'Other'];
+
+
+let D = {grids:{}, extra:[], tf:['','',''], org:'', oname:'', odesc:'', vision:'', tn:['','',''], bld:'', bldWhy:'', mode:'', num2:'', name2:'', mail2:'', tut:'', num:'', locked:false, buf:'', hc:{}, pk:{}, dk:{}, dt:{}, q:{}, grid:'', gap:[], gapTxt:'', r1:'', r2:'', r3:'', s1:'', s2:'', s3:'', name:'', mail:'', submitted:false};
+try { const r = localStorage.getItem(KEY); if (r) { const d = JSON.parse(r); if (d && typeof d === 'object') D = Object.assign(D, d); } } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(D)); } catch (e) {} };
+if (!D.grids || typeof D.grids !== 'object') D.grids = {};
+if (!Array.isArray(D.extra)) D.extra = [];
+if (!Array.isArray(D.tf)) D.tf = ['','',''];
+
+/* ---- personal version: same rule as in the Apps Script ---- */
+function fnv(s){let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}h^=h>>>16;h=Math.imul(h,0x85ebca6b)>>>0;h^=h>>>13;h=Math.imul(h,0xc2b2ae35)>>>0;h^=h>>>16;return h>>>0}
+function variant(num){ const h = fnv('bidi0008-w6-'+num); return [h%3, Math.floor(h/3)%3, Math.floor(h/9)%3].map((i,t)=>TEAMS[t].growth[i]); }
+const validNum = n => /^\d{8}$/.test(n);
+const req = (a,b) => {
+  const r = (a||'').trim(), w = (b||'').trim().replace(/^so that\s*/i,'');
+  return r + ' → So that: ' + w;
+};
+const pct = v => { const n = Number(v); return (n > 0 ? '+' : n < 0 ? '−' : '') + Math.abs(n) + '%'; };
+
+/* ---- tab 1 ---- */
+function showCase(){
+  if (!D.locked) { $('#caseBox').hidden = true; return; }
+  const g = variant(D.num);
+  $('#s-num').value = D.num; $('#s-num').disabled = true; $('#goCase').hidden = true;
+  $('#s-tut').value = D.tut;
+  document.querySelectorAll('input[name=mode]').forEach(r=>{ r.checked = r.value===D.mode; r.disabled = true; });
+  if (D.mode==='2') { $('#s-num2-f').hidden = false; $('#s-num2').value = D.num2; $('#s-num2').disabled = true; }
+  $('#numNote').textContent = (D.mode==='2' ? 'Pair: ' + D.num + ' and ' + D.num2 : 'Student number ' + D.num) + ' · these are your numbers.';
+  $('#caseTk').innerHTML = TEAMS.map((t,i)=>`<div>Team ${i+1} · ${t.now} staff<b>${pct(g[i])}</b></div>`).join('') + `<div>New floor<b>≈ ${FLOOR_M2} m²</b></div>`;
+  buildTeams();
+  $('#caseBox').hidden = false;
+  buildDesk();
+}
+function buildOrgs(){
+  $('#orgs').innerHTML = ORGS.map((o,i)=>`<label class="org"><input type="radio" name="org" value="${i}"${D.org===o.k?' checked':''}> <span><b>${esc(o.k)}</b>${o.teams[0]?`<small>${esc(o.teams.join(' · '))}</small>`:'<small>Name the teams yourself</small>'}</span></label>`).join('');
+}
+$('#orgs').addEventListener('change', e=>{
+  if (e.target.name !== 'org') return;
+  const o = ORGS[+e.target.value], prev = ORGS.find(x=>x.k===D.org);
+  D.tn = D.tn.map((n,i)=> (!n || (prev && n===prev.teams[i])) ? o.teams[i] : n);
+  D.tf = D.tf.map((n,i)=> (prev && n===prev.fn[i]) ? '' : n);
+  D.org = o.k; save(); buildTeams(); buildDesk(); calc(); refresh();
+});
+function buildTeams(){
+  const g = D.locked ? variant(D.num) : [0,0,0];
+  $('#teamTable').innerHTML = '<tr><th>Team</th><th>Team name</th><th>What does this team do?</th><th>How it uses desks</th><th>Staff now</th><th>Growth</th><th>Peak use</th></tr>' +
+    TEAMS.map((t,i)=>`<tr><td>Team ${i+1}</td><td><input type="text" class="tn" data-i="${i}" value="${esc(D.tn[i]||'')}" placeholder="e.g. ${esc(ORGS[0].teams[i])}" style="width:150px"></td><td><input type="text" class="tf" data-i="${i}" value="${esc(D.tf[i]||'')}" placeholder="Write it yourself" style="width:200px"></td><td>${esc(t.note)}</td><td>${t.now}</td><td>${pct(g[i])}</td><td>${Math.round(t.util*100)}%</td></tr>`).join('') +
+    D.extra.map((x,i)=>`<tr class="xrow"><td>Extra ${i+1} <button type="button" class="linkbtn rmx" data-i="${i}" aria-label="Remove">✕</button></td>
+      <td><input type="text" class="xt" data-i="${i}" data-f="n" value="${esc(x.n)}" placeholder="e.g. Marketing" style="width:150px"></td>
+      <td><input type="text" class="xt" data-i="${i}" data-f="f" value="${esc(x.f||'')}" placeholder="Write it yourself" style="width:200px"></td>
+      <td><select class="xt" data-i="${i}" data-f="u"><option value="">How it uses desks…</option>${[['90','At desks most of the day (90%)'],['60','Desk-based, some home working (60%)'],['35','Often out of the office (35%)'],['20','Rarely in the office (20%)']].map(([v,t])=>`<option value="${v}"${x.u===v?' selected':''}>${t}</option>`).join('')}</select></td>
+      <td><input type="number" min="1" max="60" class="xt" data-i="${i}" data-f="now" value="${esc(x.now)}" style="width:70px"></td>
+      <td><input type="number" min="-100" max="100" class="xt" data-i="${i}" data-f="g" value="${esc(x.g)}" style="width:70px"> %</td>
+      <td>${x.u ? x.u + '%' : '–'}</td></tr>`).join('') +
+    '<tr><td>Leader and PA</td><td>–</td><td>Leads the organisation</td><td>Private office + PA desk</td><td>2</td><td>0%</td><td>–</td></tr>';
+  $('#addTeam').disabled = D.extra.length >= 3 || !D.locked;
+}
+$('#addTeam').addEventListener('click', ()=>{ if (D.extra.length >= 3) return; D.extra.push({n:'', f:'', now:'', g:'', u:''}); save(); buildTeams(); buildDesk(); calc(); refresh(); });
+$('#teamTable').addEventListener('click', e=>{ const b = e.target.closest('.rmx'); if (!b) return; const i = +b.dataset.i; D.extra.splice(i,1);
+  ['hc','pk','dk','dt'].forEach(k=>{ const o = {}; Object.keys(D[k]).forEach(id=>{ if (!/^x/.test(id)) o[id] = D[k][id]; }); D[k] = o; });
+  save(); buildTeams(); buildDesk(); calc(); refresh(); });
+const xChange = e=>{ const el = e.target; if (!el.classList.contains('xt')) return; D.extra[+el.dataset.i][el.dataset.f] = el.value; save(); if (el.tagName==='SELECT') buildTeams(); buildDesk(); calc(); refresh(); };
+$('#teamTable').addEventListener('change', xChange);
+$('#teamTable').addEventListener('input', e=>{ if (e.target.classList.contains('xt') && e.target.tagName==='INPUT') { D.extra[+e.target.dataset.i][e.target.dataset.f] = e.target.value; save(); buildDesk(); calc(); refresh(); } });
+$('#teamTable').addEventListener('input', e=>{ if (e.target.classList.contains('tf')) { D.tf[+e.target.dataset.i] = e.target.value; save(); refresh(); return; } if (!e.target.classList.contains('tn')) return; D.tn[+e.target.dataset.i] = e.target.value; save(); buildDesk(); calc(); refresh(); });
+[['#o-name','oname'],['#o-desc','odesc'],['#o-vision','vision'],['#b-why','bldWhy']].forEach(([s,k])=>{ const el = $(s); el.value = D[k]||''; el.addEventListener('input', ()=>{ D[k] = el.value; save(); refresh(); if (k==='oname') titleBlock(); }); });
+
+/* ---- tab 2: building ---- */
+function bldPics(){
+  const ill = {};
+  ill.A = `<svg viewBox="0 0 240 150" role="img" aria-label="City tower"><rect width="240" height="150" fill="#dfe9f3"/><rect x="0" y="120" width="240" height="30" fill="#9aa3a0"/>
+    <rect x="20" y="70" width="40" height="50" fill="#b8c2cc"/><rect x="180" y="55" width="45" height="65" fill="#b8c2cc"/>
+    <rect x="85" y="10" width="70" height="110" fill="#5f7184"/>${Array.from({length:13},(_,r)=>Array.from({length:5},(_,c)=>`<rect x="${90+c*13}" y="${15+r*8}" width="9" height="5" fill="${r===4?'#ffd27a':'#cfe3f5'}"/>`).join('')).join('')}
+    <text x="160" y="50" font-size="9" fill="#1d2321">◀ Level 12</text><text x="120" y="142" font-size="9" fill="#fff" text-anchor="middle">Station 3 min</text></svg>`;
+  ill.B = `<svg viewBox="0 0 240 150" role="img" aria-label="Two-storey building between a main road and a side street, next to a park"><rect width="240" height="150" fill="#e8f1e4"/>
+    <rect x="0" y="0" width="240" height="24" fill="#6b7075"/>${[20,60,100,140,180,220].map(x=>`<rect x="${x}" y="11" width="16" height="2" fill="#fff"/>`).join('')}<text x="130" y="8" font-size="8" fill="#fff">MAIN ROAD · bus stop</text>
+    <rect x="0" y="126" width="240" height="24" fill="#6b7075"/>${[20,60,100,140,180,220].map(x=>`<rect x="${x}" y="137" width="16" height="2" fill="#fff"/>`).join('')}<text x="130" y="148" font-size="7" fill="#fff">SIDE STREET</text>
+    <rect x="0" y="24" width="62" height="102" fill="#a9d39a"/>${[[14,40],[40,58],[16,80],[44,98],[18,114]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="9" fill="#5e9e57"/>`).join('')}<text x="31" y="74" font-size="8" text-anchor="middle" fill="#1d2321">PARK</text>
+    <rect x="66" y="30" width="48" height="92" fill="#c9b79c" stroke="#b3261e" stroke-width="2"/><line x1="66" y1="76" x2="114" y2="76" stroke="#5d6763"/>
+    <text x="90" y="57" font-size="7" text-anchor="middle" fill="#1d2321">2 floors</text><text x="90" y="98" font-size="7" text-anchor="middle" fill="#1d2321">no lift</text><rect x="84" y="27" width="10" height="5" fill="#b3261e"/>
+    <rect x="114" y="30" width="58" height="92" fill="#b9b9b4"/><rect x="174" y="30" width="62" height="92" fill="#b9b9b4"/><text x="143" y="78" font-size="7" text-anchor="middle" fill="#1d2321">next door</text><text x="205" y="78" font-size="7" text-anchor="middle" fill="#1d2321">next door</text></svg>`;
+  ['A','B'].forEach(k=>{
+    const box = $('#pic'+k), img = new Image();
+    img.alt = k==='A' ? 'Option A: city tower' : 'Option B: low-rise building';
+    img.onload = ()=>{ box.innerHTML = ''; box.appendChild(img); $('#cred'+k).textContent = PHOTO[k].credit ? 'Photo: ' + PHOTO[k].credit : ''; };
+    img.onerror = ()=>{ box.innerHTML = ill[k]; };
+    box.innerHTML = ill[k]; img.src = PHOTO[k].src;
+  });
+}
+document.querySelectorAll('input[name=bld]').forEach(r=>{ r.checked = r.value===D.bld; r.addEventListener('change', ()=>{ D.bld = r.value; save(); markBld(); buildPlans(); refresh(); }); });
+function markBld(){ document.querySelectorAll('.bld').forEach(b=>b.classList.toggle('on', b.dataset.b===D.bld)); }
+function checklistUI(){ const li = $('#ck7m'); if (li) li.hidden = D.bld === 'B'; }
+function titleBlock(){
+  checklistUI();
+  $('#tbTitle').textContent = (D.oname && D.oname.trim() ? D.oname.trim() : 'Your organisation') + (D.bld==='A' ? ' · City tower, Level 12' : D.bld==='B' ? ' · Low-rise building, ground and first floors' : '');
+}
+function modeUI(){
+  const m = (document.querySelector('input[name=mode]:checked')||{}).value || D.mode;
+  $('#s-num2-f').hidden = m !== '2';
+  $('#numLab').textContent = m === '2' ? 'Your student number' : 'Student number';
+}
+document.querySelectorAll('input[name=mode]').forEach(r=>r.addEventListener('change', ()=>{ if (!D.locked) { D.mode = r.value; save(); modeUI(); refresh(); } }));
+$('#goCase').addEventListener('click', ()=>{
+  const n = $('#s-num').value.trim(), n2 = $('#s-num2').value.trim(), t = $('#s-tut').value;
+  if (D.mode !== '1' && D.mode !== '2') { $('#numNote').textContent = 'Please choose: on your own, or in a pair.'; return; }
+  if (!t) { $('#numNote').textContent = 'Please choose your tutorial group.'; return; }
+  if (!validNum(n)) { $('#numNote').textContent = 'Please enter your 8-digit student number.'; return; }
+  if (D.mode === '2' && (!validNum(n2) || n2 === n)) { $('#numNote').textContent = 'Please enter your partner’s 8-digit student number (different from yours).'; return; }
+  D.num = n; D.num2 = D.mode === '2' ? n2 : ''; D.tut = t; D.locked = true; save(); showCase(); refresh();
+});
+$('#s-tut').addEventListener('change', e=>{ D.tut = e.target.value; save(); refresh(); });
+
+/* ---- tab 2 ---- */
+function buildDesk(){
+  const g = D.locked ? variant(D.num) : [0,0,0];
+  $('#deskTable').innerHTML = '<tr><th>Team</th><th>Now</th><th>Growth</th><th>Peak use</th><th>Future headcount</th><th>Peak demand</th><th>Desks</th><th>Desk type</th></tr>' +
+    TEAMS.map((t,i)=>`<tr><td>${esc(tName(i))}</td><td>${t.now}</td><td>${pct(g[i])}</td><td>${Math.round(t.util*100)}%</td>
+      <td><input type="number" min="0" step="1" data-k="hc" data-t="${t.id}" value="${esc(D.hc[t.id]||'')}"></td>
+      <td><input type="number" min="0" step="0.1" data-k="pk" data-t="${t.id}" value="${esc(D.pk[t.id]||'')}"></td>
+      <td><input type="number" min="0" step="1" data-k="dk" data-t="${t.id}" value="${esc(D.dk[t.id]||'')}"></td>
+      <td><select data-k="dt" data-t="${t.id}"><option value="">Choose…</option>${['One each','Shared','Touchdown / bookable'].map(o=>`<option${D.dt[t.id]===o?' selected':''}>${o}</option>`).join('')}</select></td></tr>`).join('') +
+    D.extra.map((x,i)=>{ const id = 'x'+i; return `<tr><td>${esc(x.n||('Extra team '+(i+1)))}</td><td>${esc(x.now||'–')}</td><td>${pct(x.g||0)}</td><td>${x.u?x.u+'%':'–'}</td>
+      <td><input type="number" min="0" step="1" data-k="hc" data-t="${id}" value="${esc(D.hc[id]||'')}"></td>
+      <td><input type="number" min="0" step="0.1" data-k="pk" data-t="${id}" value="${esc(D.pk[id]||'')}"></td>
+      <td><input type="number" min="0" step="1" data-k="dk" data-t="${id}" value="${esc(D.dk[id]||'')}"></td>
+      <td><select data-k="dt" data-t="${id}"><option value="">Choose…</option>${['One each','Shared','Touchdown / bookable'].map(o=>`<option${D.dt[id]===o?' selected':''}>${o}</option>`).join('')}</select></td></tr>`; }).join('') +
+    '<tr><td>Leader and PA</td><td>2</td><td>0%</td><td>–</td><td>2</td><td>–</td><td>1 + office</td><td>One each</td></tr>';
+  $('#buf').value = D.buf;
+}
+document.addEventListener('input', e=>{
+  const el = e.target, k = el.dataset && el.dataset.k;
+  if (k) { D[k][el.dataset.t] = el.value; save(); calc(); refresh(); }
+});
+document.addEventListener('change', e=>{
+  const el = e.target, k = el.dataset && el.dataset.k;
+  if (k) { D[k][el.dataset.t] = el.value; save(); calc(); refresh(); }
+});
+$('#buf').addEventListener('input', e=>{ D.buf = e.target.value; save(); refresh(); });
+
+const allIds = () => TEAMS.map(t=>t.id).concat(D.extra.map((x,i)=>'x'+i));
+function deskTotal(){ let s = 0, ok = true; allIds().forEach(id=>{ const v = parseInt(D.dk[id],10); if (isNaN(v)) ok = false; else s += v; }); return ok ? s + 1 : NaN; }
+function buildSched(){
+  $('#schedTable').innerHTML = '<tr><th>Setting</th><th>m² each</th><th>How many</th><th>Total m²</th></tr>' +
+    SETTINGS.map(s=>`<tr><td>${esc(s.name)}</td><td>${s.m2}</td><td>${s.auto?'<span id="wsQ">–</span>':s.fixed?'1':`<input type="number" min="0" step="1" data-k="q" data-t="${s.id}" value="${esc(D.q[s.id]||'')}">`}</td><td id="tot-${s.id}">–</td></tr>`).join('');
+}
+function areas(){
+  const ws = deskTotal(); let sub = 0, ok = !isNaN(ws);
+  const rows = {};
+  SETTINGS.forEach(s=>{ let n = s.auto ? ws : s.fixed ? s.fixed : parseInt(D.q[s.id]||'0',10); if (isNaN(n)) n = 0; rows[s.id] = n; sub += n*s.m2; });
+  return {ok, ws, rows, sub, tot: Math.round(sub*1.2)};
+}
+function calc(){
+  const ws = deskTotal(), fut = allIds().reduce((a,id)=>a+(parseInt(D.hc[id],10)||0),0) + 2;
+  $('#kDesks').textContent = isNaN(ws) ? '–' : ws;
+  $('#kRatio').textContent = isNaN(ws) || fut <= 2 ? '–' : (ws/fut).toFixed(2);
+  const a = areas();
+  $('#wsQ').textContent = isNaN(ws) ? '–' : ws;
+  SETTINGS.forEach(s=>{ $('#tot-'+s.id).textContent = (s.auto && isNaN(ws)) ? '–' : a.rows[s.id]*s.m2; });
+  $('#kSub').textContent = a.ok ? a.sub : '–';
+  $('#kTot').textContent = a.ok ? a.tot : '–';
+  const gap = a.tot - FLOOR_M2;
+  if (!a.ok) { $('#kGap').textContent = '–'; $('#gapNote').textContent = 'Enter desks for every team first.'; $('#gapKpi').className = 'kpi'; }
+  else if (gap > 0) { $('#kGap').textContent = '+' + gap + ' m²'; $('#kGapLab').textContent = 'too much for 400 m²'; $('#gapKpi').className = 'kpi over'; $('#gapNote').textContent = 'It does not fit. Change your desks or your schedule, or argue for more space, and explain your choice in Tab 5.'; }
+  else { $('#kGap').textContent = gap + ' m²'; $('#kGapLab').textContent = 'fits within 400 m²'; $('#gapKpi').className = 'kpi fits'; $('#gapNote').textContent = 'It fits. In Tab 5, explain what you changed to make it fit, and what users lose.'; }
+}
+
+/* ---- tab 4: plans and zoning ---- */
+let brush = 'Q', painting = false;
+const coreA = (c,r) => (c>=7&&c<=12&&r>=3&&r<=6) ? 'core' : (c<=1&&r>=7) ? 'stair' : '';
+const coreB = (c,r) => (c>=4&&r>=6&&r<=9) ? 'core' : (c<=1&&r>=12) ? 'stair' : '';
+const PLANS = {
+  A: [{id:'A', cols:21, rows:10, label:'Level 12', fixed:coreA}],
+  B: [{id:'B0', cols:7, rows:15, label:'Ground floor', ground:true, fixed:coreB},
+      {id:'B1', cols:7, rows:15, label:'First floor', ground:false, fixed:coreB}]
+};
+const M = {l:3.6, r:3.6, t:4.2, b:4.2};
+function gridOf(p){ if (!D.grids) D.grids = {}; const n = p.cols*p.rows; if (!D.grids[p.id] || D.grids[p.id].length !== n) D.grids[p.id] = '.'.repeat(n); return D.grids[p.id]; }
+function curPlans(){ return D.bld ? PLANS[D.bld] : []; }
+function buildPalette(){
+  $('#palette').innerHTML = ZONES.map(z=>`<button type="button" class="sw${z.k===brush?' on':''}" data-z="${z.k}"><i style="background:${z.col}"></i>${esc(z.name)}</button>`).join('');
+}
+$('#palette').addEventListener('click', e=>{ const b = e.target.closest('.sw'); if (!b) return; brush = b.dataset.z; buildPalette(); });
+function colOf(k){ const z = ZONES.find(z=>z.k===k); return z ? z.col : 'transparent'; }
+
+function buildPlans(){
+  const box = $('#plans'); const ps = curPlans();
+  $('#noBld').hidden = !!D.bld;
+  if (!ps.length) { box.innerHTML = ''; zoneKpis(); return; }
+  box.className = 'plansrow' + (ps.length > 1 ? ' two' : '');
+  box.innerHTML = ps.map(p=>{
+    const W = p.cols*1.5, H = p.rows*1.5, VW = W+M.l+M.r, VH = H+M.t+M.b;
+    const g = gridOf(p); let cells = '';
+    for (let r=0;r<p.rows;r++) for (let c=0;c<p.cols;c++){ const i = r*p.cols+c, fx = p.fixed(c,r);
+      cells += fx ? `<div class="cell fx" data-p="${p.id}" data-i="${i}"></div>` : `<div class="cell" data-p="${p.id}" data-i="${i}" style="background:${colOf(g[i])}"></div>`; }
+    return `<div class="planwrap"><div class="planbox" style="padding:${M.t/VW*100}% ${M.r/VW*100}% ${M.b/VW*100}% ${M.l/VW*100}%">
+      <div class="floor" style="grid-template-columns:repeat(${p.cols},1fr);aspect-ratio:${p.cols}/${p.rows}">${cells}</div>
+      <svg class="arch" viewBox="${-M.l} ${-M.t} ${VW} ${VH}" preserveAspectRatio="none" aria-hidden="true">${drawPlan(p)}</svg></div>
+      <div class="plancap">${esc(p.label)} · about ${Math.round((p.cols*p.rows - countFixed(p))*CELL_M2)} m² usable</div></div>`;
+  }).join('');
+  titleBlock(); zoneKpis();
+}
+function countFixed(p){ let n=0; for (let r=0;r<p.rows;r++) for (let c=0;c<p.cols;c++) if (p.fixed(c,r)) n++; return n; }
+
+function drawPlan(p){
+  const W = p.cols*1.5, H = p.rows*1.5, L = [], B = D.bld === 'B';
+  const R = (x,y,w,h,f,st,sw,ex='') => L.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${f}" stroke="${st}" stroke-width="${sw}" vector-effect="non-scaling-stroke" ${ex}/>`);
+  const Ln = (x1,y1,x2,y2,st,sw,ex='') => L.push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${st}" stroke-width="${sw}" vector-effect="non-scaling-stroke" ${ex}/>`);
+  const T = (x,y,s,size,col='#1d2321',ex='') => L.push(`<text x="${x}" y="${y}" font-size="${size}" fill="${col}" ${ex}>${s}</text>`);
+  // door: hinge (hx,hy), along the wall (ax,ay), swinging towards (nx,ny), leaf d
+  const door = (hx, hy, ax, ay, nx, ny, d) => {
+    const qx = hx+ax*d, qy = hy+ay*d, px = hx+nx*d, py = hy+ny*d;
+    if (ax !== 0) R(Math.min(hx,qx), hy-0.13, Math.abs(qx-hx), 0.26, '#ffffff', 'none', 0); else R(hx-0.13, Math.min(hy,qy), 0.26, Math.abs(qy-hy), '#ffffff', 'none', 0);
+    const sweep = (nx*ay - ny*ax) > 0 ? 1 : 0;
+    L.push(`<path d="M${hx},${hy} L${px},${py} A${d} ${d} 0 0 ${sweep} ${qx},${qy}" fill="none" stroke="#1d2321" stroke-width="0.9" vector-effect="non-scaling-stroke"/>`);
+  };
+  // dog-leg stair with half landing at the top, treads 0.28 m, break line and walking line
+  const stair = (x, y, w, h, label) => {
+    const fw = w/2, ld = Math.min(1.4, h*0.3), fy0 = y + ld, fy1 = y + h;
+    R(x, y, w, h, '#f4f4f1', '#1d2321', 1); Ln(x, fy0, x+w, fy0, '#1d2321', 1); Ln(x+fw, fy0, x+fw, fy1, '#1d2321', 1.4);
+    for (let t = fy0 + 0.28; t < fy1 - 0.05; t += 0.28) { Ln(x, t, x+fw, t, '#1d2321', 0.7); Ln(x+fw, t, x+w, t, '#1d2321', 0.7); }
+    const by = fy0 + (fy1-fy0)*0.45;
+    L.push(`<polyline points="${x},${by+0.35} ${x+fw*0.4},${by+0.35} ${x+fw*0.5},${by+0.05} ${x+fw*0.6},${by+0.45} ${x+fw*0.7},${by+0.15} ${x+fw},${by+0.15}" fill="none" stroke="#1d2321" stroke-width="1" vector-effect="non-scaling-stroke"/>`);
+    const lx = x + fw/2, rx = x + fw + fw/2, my = y + ld*0.72;
+    L.push(`<polyline points="${lx},${fy1-0.15} ${lx},${my} ${rx},${my} ${rx},${fy1-0.6}" fill="none" stroke="#b3261e" stroke-width="1" vector-effect="non-scaling-stroke"/>`);
+    L.push(`<path d="M${rx-0.18},${fy1-0.85} L${rx},${fy1-0.5} L${rx+0.18},${fy1-0.85}" fill="none" stroke="#b3261e" stroke-width="1" vector-effect="non-scaling-stroke"/><circle cx="${lx}" cy="${fy1-0.15}" r="0.08" fill="#b3261e"/>`);
+    T(lx+0.3, fy1-0.3, 'UP', 0.3, '#b3261e', 'text-anchor="middle"'); T(rx+0.3, fy1-0.95, 'DN', 0.3, '#b3261e', 'text-anchor="middle"');
+    T(x+w/2, y+ld*0.38, label, 0.28, '#1d2321', 'text-anchor="middle" font-weight="700"');
+  };
+  const stairH = (x, y, len, w, label) => {
+    const fw = w/2, ld = Math.min(1.3, len*0.3), fx1 = x + len - ld;
+    R(x, y, len, w, '#f4f4f1', '#1d2321', 1); Ln(fx1, y, fx1, y+w, '#1d2321', 1); Ln(x, y+fw, fx1, y+fw, '#1d2321', 1.4);
+    for (let t = x + 0.28; t < fx1 - 0.05; t += 0.28) { Ln(t, y, t, y+fw, '#1d2321', 0.7); Ln(t, y+fw, t, y+w, '#1d2321', 0.7); }
+    const bx = x + (fx1-x)*0.45;
+    L.push(`<polyline points="${bx+0.35},${y+w} ${bx+0.35},${y+w-fw*0.4} ${bx+0.05},${y+w-fw*0.5} ${bx+0.45},${y+w-fw*0.6} ${bx+0.15},${y+w-fw*0.7} ${bx+0.15},${y+fw}" fill="none" stroke="#1d2321" stroke-width="1" vector-effect="non-scaling-stroke"/>`);
+    const ly = y + fw + fw/2, uy = y + fw/2, mx = fx1 + ld*0.45;
+    L.push(`<polyline points="${x+0.15},${ly} ${mx},${ly} ${mx},${uy} ${x+0.6},${uy}" fill="none" stroke="#b3261e" stroke-width="1" vector-effect="non-scaling-stroke"/>`);
+    L.push(`<path d="M${x+0.85},${uy-0.18} L${x+0.5},${uy} L${x+0.85},${uy+0.18}" fill="none" stroke="#b3261e" stroke-width="1" vector-effect="non-scaling-stroke"/><circle cx="${x+0.15}" cy="${ly}" r="0.08" fill="#b3261e"/>`);
+    T(x+0.45, ly+0.45, 'UP', 0.28, '#b3261e', 'text-anchor="middle"'); T(x+1.2, uy-0.25, 'DN', 0.28, '#b3261e', 'text-anchor="middle"');
+    T(fx1+ld*0.62, y+w/2, label, 0.26, '#1d2321', `text-anchor="middle" font-weight="700" transform="rotate(-90 ${fx1+ld*0.62} ${y+w/2})"`);
+  };
+  const wall = () => L.push(`<path d="M-0.35 -0.35 H${W+0.35} V${H+0.35} H-0.35 Z M0 0 V${H} H${W} V0 Z" fill="#1d2321" fill-rule="evenodd"/>`);
+  const glazeH = (y0, y1, x0, x1) => { for (let x=x0+0.75; x<x1-0.6; x+=1.5){ R(x, y0, 1.35, y1-y0, '#ffffff', 'none', 0); Ln(x, (y0+y1)/2, x+1.35, (y0+y1)/2, '#5b8fc7', 1.2); } };
+  const glazeV = (x0, x1, y0, y1) => { for (let y=y0+0.75; y<y1-0.6; y+=1.5){ R(x0, y, x1-x0, 1.35, '#ffffff', 'none', 0); Ln((x0+x1)/2, y, (x0+x1)/2, y+1.35, '#5b8fc7', 1.2); } };
+  const bubbles = (gx, gy, topY) => {
+    gx.forEach((x,i)=>{ gy.forEach(y=>R(x-0.2, y-0.2, 0.4, 0.4, '#1d2321', 'none', 0)); L.push(`<circle cx="${x}" cy="${topY}" r="0.32" fill="#fff" stroke="#5d6763" stroke-width="1" vector-effect="non-scaling-stroke"/>`); T(x, topY+0.13, 'ABCDEF'[i], 0.4, '#5d6763', 'text-anchor="middle"'); });
+    gy.forEach((y,i)=>{ L.push(`<circle cx="-0.85" cy="${y}" r="0.32" fill="#fff" stroke="#5d6763" stroke-width="1" vector-effect="non-scaling-stroke"/>`); T(-0.85, y+0.13, i+1, 0.4, '#5d6763', 'text-anchor="middle"'); });
+  };
+  const scale = () => { R(W-6.3, H+M.b-1.0, 6.6, 0.9, '#ffffff', 'none', 0, 'opacity="0.85"');
+    [[W-6,1.5,'#1d2321'],[W-4.5,1.5,'#fff'],[W-3,3,'#1d2321']].forEach(([x,w,f])=>R(x, H+M.b-0.85, w, 0.18, f, '#1d2321', 1));
+    T(W-6, H+M.b-0.25, '0', 0.36, '#1d2321', 'text-anchor="middle"'); T(W-3, H+M.b-0.25, '3', 0.36, '#1d2321', 'text-anchor="middle"'); T(W, H+M.b-0.25, '6 m', 0.36, '#1d2321', 'text-anchor="middle"'); };
+
+  if (!B) {
+    // ---------- A: tower floor, Level 12 ----------
+    L.push(`<path d="M${-M.l} ${-M.t} H${W+M.r} V${H+M.b} H${-M.l} Z M-0.35 -0.35 V${H+0.35} H${W+0.35} V-0.35 Z" fill="#eef3f8" fill-rule="evenodd"/>`);
+    T(W/2, -2.6, 'LEVEL 12 · VIEWS ON ALL SIDES', 0.5, '#3b7fb6', 'text-anchor="middle" font-weight="700"');
+    wall(); glazeH(-0.35, 0, 0, W); glazeH(H, H+0.35, 0, W); glazeV(-0.35, 0, 0, 10.5); glazeV(W, W+0.35, 0, H);
+    bubbles([0, 6.3, 12.6, 18.9, 25.2, 31.5].filter(x=>x<=W), [0, 7.5, 15], -0.85);
+    R(10.5, 4.5, 9, 6, '#e4e4e1', '#1d2321', 2.2);
+    R(10.7, 4.7, 2.6, 2.1, 'none', '#1d2321', 1); R(13.5, 4.7, 2.6, 2.1, 'none', '#1d2321', 1);
+    [10.7,13.5].forEach(x=>{ Ln(x,4.7,x+2.6,6.8,'#1d2321',0.8); Ln(x+2.6,4.7,x,6.8,'#1d2321',0.8); R(x+0.7, 6.72, 1.2, 0.16, '#ffffff', 'none', 0); Ln(x+0.7, 6.75, x+1.9, 6.75, '#1d2321', 0.8); Ln(x+0.7, 6.85, x+1.9, 6.85, '#1d2321', 0.8); });
+    T(13.4, 7.95, 'LIFT LOBBY', 0.4, '#1d2321', 'text-anchor="middle"');
+    R(10.7, 8.7, 2.6, 1.6, 'none', '#1d2321', 1); R(13.5, 8.7, 2.6, 1.6, 'none', '#1d2321', 1);
+    T(12.0, 9.7, 'WC', 0.4, '#1d2321', 'text-anchor="middle"'); T(14.8, 9.7, 'WC', 0.4, '#1d2321', 'text-anchor="middle"');
+    door(11.6, 8.7, 1, 0, 0, -1, 0.8); door(14.4, 8.7, 1, 0, 0, -1, 0.8);
+    stair(16.4, 4.7, 2.9, 5.6, 'STAIR 1'); door(19.5, 8.6, 0, 1, 1, 0, 0.9);
+    door(10.5, 7.0, 0, 1, -1, 0, 0.75); door(10.5, 8.5, 0, -1, -1, 0, 0.75);
+    T(8.7, 8.0, '◀ ENTRANCE', 0.42, '#b3261e', 'text-anchor="middle" font-weight="700"');
+    R(0, 10.5, 3, 4.5, '#e4e4e1', '#1d2321', 2.2); stair(0.15, 10.65, 2.7, 4.2, 'STAIR 2'); door(3.0, 11.0, 0, 1, 1, 0, 0.9);
+    scale();
+  } else {
+    // ---------- B: low-rise, two narrow and deep floors (10.5 m × 22.5 m), no lift ----------
+    const G = p.ground;
+    R(-M.l, -M.t, W+M.l+M.r, 2.6, G ? '#6b7075' : '#a3a7ab', 'none', 0);                     // road at the front (north)
+    for (let x=-3; x<W+3; x+=3) R(x, -2.95, 1.5, 0.1, '#ffffff', 'none', 0);
+    R(-M.l, -1.6, W+M.l+M.r, 1.25, '#d6d6d1', 'none', 0);
+    T(W/2, -3.3, G ? 'MAIN ROAD' : 'main road below', 0.5, '#ffffff', 'text-anchor="middle" font-weight="700"');
+    if (G) { R(W-2.6, -1.45, 2.2, 0.5, '#2e6fa8', 'none', 0); T(W-1.5, -1.08, 'BUS', 0.32, '#fff', 'text-anchor="middle"'); }
+    R(-M.l, H+0.35, W+M.l+M.r, M.b-0.35, G ? '#6b7075' : '#a3a7ab', 'none', 0);            // side street at the back (south)
+    for (let x=-3; x<W+3; x+=3) R(x, H+2.6, 1.5, 0.1, '#ffffff', 'none', 0);
+    R(-M.l, H+0.35, W+M.l+M.r, 0.9, '#d6d6d1', 'none', 0);
+    T(-3.3, H+2.2, G ? 'SIDE STREET' : 'side street below', 0.42, '#ffffff', 'font-weight="700"');
+    R(-M.l, -0.35, M.l-0.35, H+0.7, G ? '#bfe0b3' : '#d7ecd0', 'none', 0);                   // park to the west (left)
+    [[-2.4,1.5],[-1.3,5],[-2.5,8.5],[-1.2,12],[-2.4,15.5],[-1.3,19],[-2.3,21.8]].forEach(([x,y])=>L.push(`<circle cx="${x}" cy="${y}" r="0.85" fill="#6aa962" opacity="${G?0.9:0.55}"/>`));
+    T(-1.95, H/2+4, G ? 'PUBLIC PARK' : 'park view', 0.42, '#1d2321', `text-anchor="middle" font-weight="700" transform="rotate(-90 -1.95 ${H/2+4})"`);
+    R(W+0.35, -0.35, M.r-0.35, H+0.7, '#b9b9b4', 'none', 0);                               // neighbour (east)
+    for (let y=-0.3; y<H; y+=0.8) Ln(W+0.35, y, W+M.r, y+2.6, '#8d8d88', 0.6);
+    T(W+1.95, H/2, 'NEIGHBOURING BUILDING', 0.4, '#1d2321', `text-anchor="middle" transform="rotate(90 ${W+1.95} ${H/2})"`);
+    wall(); glazeH(-0.35, 0, 0, W); glazeH(H, H+0.35, 3, W); glazeV(-0.35, 0, 0, 18);      // windows on the main road, the park side and the side street
+    R(W, -0.35, 0.5, H+0.7, '#1d2321', 'none', 0);                                           // solid party wall (east)
+    bubbles([0, 10.5], [0, 7.5, 15, 22.5], H+0.85);
+    // services core in the middle of the floor, against the blank east wall (the darkest part of the plan)
+    const cy = 9;
+    R(6, cy, 4.5, 6, '#e4e4e1', '#1d2321', 2.2);
+    // main stair at the front of the core, flights running east–west; door on the west side
+    stairH(6.15, cy+0.25, 4.2, 3.0, 'MAIN STAIR');
+    door(6, cy+0.1, 0, 1, -1, 0, 0.9);
+    // two WCs (one accessible) at the back of the core, doors open outwards to the south
+    R(6.2, cy+3.5, 2.1, 2.5, '#ffffff', '#1d2321', 1); R(8.5, cy+3.5, 1.8, 2.5, '#ffffff', '#1d2321', 1);
+    [[7.25,cy+3.5],[9.4,cy+3.5]].forEach(([x,y])=>{ R(x-0.25, y, 0.5, 0.22, '#f4f4f1', '#1d2321', 0.8); L.push(`<ellipse cx="${x}" cy="${y+0.55}" rx="0.22" ry="0.32" fill="#f4f4f1" stroke="#1d2321" stroke-width="0.8" vector-effect="non-scaling-stroke"/>`); });
+    R(6.35, cy+3.65, 0.35, 0.45, '#f4f4f1', '#1d2321', 0.8);
+    T(7.25, cy+4.95, 'ACCESSIBLE', 0.24, '#1d2321', 'text-anchor="middle"'); T(7.25, cy+5.3, 'WC', 0.3, '#1d2321', 'text-anchor="middle" font-weight="700"');
+    T(9.4, cy+5.15, 'WC', 0.3, '#1d2321', 'text-anchor="middle" font-weight="700"');
+    door(6.4, cy+6, 1, 0, 0, 1, 0.9); door(8.65, cy+6, 1, 0, 0, 1, 0.8);
+    // escape stair (back, west)
+    R(0, 18, 3, 4.5, '#e4e4e1', '#1d2321', 2.2); stair(0.15, 18.15, 2.7, 4.2, 'ESCAPE'); door(3.0, 18.4, 0, 1, 1, 0, 0.9);
+    if (G) {
+      R(4.35, -0.4, 1.8, 0.45, '#1d2321', 'none', 0); door(4.5, 0, 1, 0, 0, 1, 0.75); door(6.0, 0, -1, 0, 0, 1, 0.75);
+      T(5.25, -0.55, 'MAIN ENTRANCE ▼', 0.42, '#b3261e', 'text-anchor="middle" font-weight="700"');
+      door(0.4, H, 1, 0, 0, 1, 0.9); T(1.75, H+0.95, 'EXIT', 0.32, '#b3261e', 'text-anchor="middle" font-weight="700"');
+    } else {
+      T(3.2, 13.2, 'no lift: stairs only', 0.34, '#5d6763', 'text-anchor="middle"');
+    }
+    scale();
+  }
+  return L.join('');
+}
+function setCell(el){
+  if (!el || !el.classList || !el.classList.contains('cell') || el.classList.contains('fx')) return;
+  const pid = el.dataset.p, i = +el.dataset.i, g = D.grids[pid];
+  D.grids[pid] = g.slice(0,i) + brush + g.slice(i+1); el.style.background = colOf(brush);
+}
+const plansBox = $('#plans');
+plansBox.addEventListener('pointerdown', e=>{ const c = e.target.closest('.cell'); if (!c) return; painting = true; setCell(c); e.preventDefault(); });
+plansBox.addEventListener('pointermove', e=>{ if (!painting) return; setCell(document.elementFromPoint(e.clientX, e.clientY)); });
+const stopPaint = ()=>{ if (painting) { painting = false; save(); zoneKpis(); refresh(); } };
+window.addEventListener('pointerup', stopPaint); window.addEventListener('pointercancel', stopPaint);
+$('#clearFloor').addEventListener('click', ()=>{ curPlans().forEach(p=>{ D.grids[p.id] = '.'.repeat(p.cols*p.rows); }); save(); buildPlans(); refresh(); });
+function zoneCounts(){ const c = {}; curPlans().forEach(p=>{ for (const ch of gridOf(p)) if (ch !== '.') c[ch] = (c[ch]||0)+1; }); return c; }
+function painted(){ return curPlans().reduce((n,p)=>n+(gridOf(p).match(/[^.]/g)||[]).length, 0); }
+function zoneKpis(){
+  const c = zoneCounts();
+  $('#zoneKpis').innerHTML = ZONES.filter(z=>z.k!=='.').map(z=>`<div class="kpi"><b>${Math.round((c[z.k]||0)*CELL_M2)}</b><small><i class="dot" style="background:${z.col}"></i>${esc(z.name)} (m²)</small></div>`).join('');
+}
+function gridMap(){
+  return curPlans().map(p=>{ const g = gridOf(p), lines = [p.label.toUpperCase()];
+    for (let r=0;r<p.rows;r++){ let s=''; for (let c=0;c<p.cols;c++) s += p.fixed(c,r) ? '#' : g[r*p.cols+c]; lines.push(s); }
+    return lines.join('\n'); }).join('\n\n');
+}
+
+/* ---- tab 4 ---- */
+function buildGap(){
+  $('#gapOpts').innerHTML = GAP_OPTS.map((o,i)=>`<label class="opt"><input type="checkbox" data-g="${i}"${D.gap.includes(o)?' checked':''}> ${esc(o)}</label>`).join('');
+}
+$('#gapOpts').addEventListener('change', e=>{ const i = e.target.dataset.g; if (i==null) return; const o = GAP_OPTS[i]; D.gap = e.target.checked ? D.gap.concat([o]) : D.gap.filter(x=>x!==o); save(); refresh(); });
+[['#a-gap','gapTxt'],['#a-r1','r1'],['#a-r2','r2'],['#a-r3','r3'],['#a-s1','s1'],['#a-s2','s2'],['#a-s3','s3'],['#p-name','name'],['#p-mail','mail'],['#p2-name','name2'],['#p2-mail','mail2']].forEach(([s,k])=>{ const el = $(s); el.value = D[k]||''; el.addEventListener('input', ()=>{ D[k] = el.value; save(); refresh(); }); });
+
+function missing(){
+  const m = [];
+  if (!D.locked) m.push(['Tab 1: choose on your own / pair, tutorial and student number', 't1']);
+  if (!D.org) m.push(['Tab 1: the kind of organisation', 't1']);
+  if ((D.oname||'').trim().length < 2) m.push(['Tab 1: a name for the organisation', 't1']);
+  if ((D.odesc||'').trim().length < 40) m.push(['Tab 1: what the organisation does (2–3 sentences)', 't1']);
+  if ((D.vision||'').trim().length < 15) m.push(['Tab 1: a vision (1 sentence)', 't1']);
+  if (!D.tn.every(n=>(n||'').trim().length >= 2)) m.push(['Tab 1: a name for each team', 't1']);
+  if (!D.tf.every(n=>(n||'').trim().length >= 5)) m.push(['Tab 1: what each team does', 't1']);
+  if (!D.extra.every(x=>(x.n||'').trim().length>=2 && (x.f||'').trim().length>=5 && +x.now>=1 && x.g!=='' && x.u)) m.push(['Tab 1: complete or remove your extra team(s)', 't1']);
+  if (!D.bld) m.push(['Tab 2: choose a building', 't2']);
+  if ((D.bldWhy||'').trim().length < 40) m.push(['Tab 2: why this building (2–3 sentences)', 't2']);
+  if (!allIds().every(id=>D.hc[id]!==''&&D.hc[id]!=null&&D.pk[id]!==''&&D.pk[id]!=null)) m.push(['Tab 3: future headcount and peak demand for every team', 't3']);
+  if (isNaN(deskTotal()) || !allIds().every(id=>D.dt[id])) m.push(['Tab 3: desks and desk type for every team', 't3']);
+  if (D.buf==='' || D.buf==null) m.push(['Tab 3: the buffer you used', 't3']);
+  if (!SETTINGS.filter(s=>!s.auto&&!s.fixed).some(s=>parseInt(D.q[s.id]||'0',10)>0)) m.push(['Tab 3: your schedule of other settings', 't3']);
+  if (painted() < 40) m.push(['Tab 4: colour at least a quarter of the plan', 't4']);
+  if (!D.gap.length) m.push(['Tab 5: how you closed the gap', 't5']);
+  if ((D.gapTxt||'').trim().length < 40) m.push(['Tab 5: what you changed and what users lose (a few sentences)', 't5']);
+  if (![D.r1,D.r2,D.r3,D.s1,D.s2,D.s3].every(x=>(x||'').trim().length >= 10)) m.push(['Tab 5: three requirements', 't5']);
+  if ((D.name||'').trim().length < 3) m.push(['Tab 5: your full name', 't5']);
+  if (!/^[^@\s]+@ucl\.ac\.uk$/i.test((D.mail||'').trim())) m.push(['Tab 5: your UCL email (…@ucl.ac.uk)', 't5']);
+  if (D.mode === '2') {
+    if ((D.name2||'').trim().length < 3) m.push(['Tab 5: your partner’s full name', 't5']);
+    if (!/^[^@\s]+@ucl\.ac\.uk$/i.test((D.mail2||'').trim())) m.push(['Tab 5: your partner’s UCL email', 't5']);
+  }
+  return m;
+}
+const ENDS = {T1:'12:00', T2:'13:00', T3:'12:00', T4:'13:00'};
+function progress(m){
+  const total = 20 + (D.mode === '2' ? 2 : 0);
+  const p = D.submitted ? 100 : Math.round(100 * (total - m.length) / total);
+  $('#progFill').style.width = p + '%'; $('#progBar').setAttribute('aria-valuenow', p);
+  $('#progTxt').textContent = D.submitted ? 'Submitted ✓' : p + '% complete';
+  document.querySelectorAll('.tab').forEach(t=>{
+    const done = !m.some(x=>x[1]===t.dataset.tab);
+    let k = t.querySelector('.ok');
+    if (done && !k) { k = document.createElement('span'); k.className = 'ok'; k.textContent = '✓'; k.setAttribute('aria-label','complete'); t.appendChild(k); }
+    if (!done && k) k.remove();
+  });
+  if (D.tut && ENDS[D.tut]) $('#dlTxt').textContent = `Deadline: ${ENDS[D.tut]} on Friday 20 November, the end of your tutorial (${D.tut}).`;
+}
+function refresh(){
+  const m = missing();
+  progress(m);
+  $('#checklist').innerHTML = m.length ? m.map(([t,tab])=>`<li class="todo"><span class="ic">!</span><a href="#" data-go="${tab}">${esc(t)}</a></li>`).join('') : '<li class="done"><span class="ic">✓</span>Ready to submit</li>';
+  $('#subBtn').disabled = m.length > 0 || D.submitted;
+  $('#whoLine').textContent = D.locked ? (D.mode==='2' ? `${D.tut || '–'} · pair: ${D.num} and ${D.num2}` : `${D.tut || '–'} · student number ${D.num}`) : 'Enter your tutorial and student number in Tab 1.';
+  $('#p2row').hidden = D.mode !== '2'; $('#p1lab').textContent = D.mode === '2' ? 'Your full name' : 'Full name';
+  const a = areas();
+  $('#fitLine').textContent = a.ok ? `Your schedule: ${a.tot} m² for about ${FLOOR_M2} m² (${a.tot>FLOOR_M2?'+'+(a.tot-FLOOR_M2)+' m² too much':'fits'}). Desks: ${a.ws}.` : 'Complete Tab 3 first.';
+  if (D.submitted) { $('#modelBox').hidden = false; }
+}
+document.addEventListener('click', e=>{ const g = e.target.closest('[data-go]'); if (g) { e.preventDefault(); showTab(g.dataset.go); } });
+
+function msg(kind, t){ $('#subMsg').innerHTML = `<div class="msg ${kind}">${esc(t)}</div>`; }
+$('#subForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  if (missing().length || D.submitted) return;
+  if (!SUBMIT_URL) { msg('bad','Submission is not yet available. Please inform your tutor.'); return; }
+  const a = areas(), c = zoneCounts();
+  const payload = {week:'Tutorial 6', tutorial:D.tut, mode:D.mode==='2'?'Pair':'Individual', name:D.name.trim(), number:D.num, email:D.mail.trim(),
+    name2:D.mode==='2'?(D.name2||'').trim():'', number2:D.mode==='2'?D.num2:'', email2:D.mode==='2'?(D.mail2||'').trim():'',
+    orgType:D.org, orgName:(D.oname||'').trim(), orgDesc:D.odesc, vision:D.vision, teams:D.tn.map((x,i)=>`${(x||'').trim()}: ${(D.tf[i]||'').trim()}`), extra:D.extra.map((x,i)=>`${x.n}: ${x.f||''} (${x.now} staff, ${pct(x.g)}, ${x.u}%): headcount ${D.hc['x'+i]}, peak ${D.pk['x'+i]}, desks ${D.dk['x'+i]} ${D.dt['x'+i]}`).join('; '), building:D.bld==='A'?'A · City tower':'B · Low-rise', bldWhy:D.bldWhy, buffer:D.buf,
+    hc:TEAMS.map(t=>D.hc[t.id]), pk:TEAMS.map(t=>D.pk[t.id]), dk:TEAMS.map(t=>D.dk[t.id]), dt:TEAMS.map(t=>D.dt[t.id]),
+    sched:SETTINGS.map(s=>s.id+':'+a.rows[s.id]).join(' '), total:a.tot, desks:a.ws,
+    zones:ZONES.filter(z=>z.k!=='.').map(z=>z.k+':'+Math.round((c[z.k]||0)*CELL_M2)).join(' '), gridMap:gridMap(),
+    gap:D.gap.join('; '), gapTxt:D.gapTxt, r1:req(D.r1,D.s1), r2:req(D.r2,D.s2), r3:req(D.r3,D.s3)};
+  $('#subBtn').disabled = true; msg('info','Submitting…');
+  try {
+    const res = await fetch(SUBMIT_URL, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(payload)});
+    const j = await res.json();
+    if (j.ok) { D.submitted = true; save(); msg('ok', j.late ? `Submitted (${j.minutesLate} min after the end of the tutorial). Thank you.` : 'Submitted. Thank you. The model answer is below.'); refresh(); }
+    else if (j.error === 'closed') { msg('bad', `Submissions are now closed (${j.closedAt}). Please speak to your tutor.`); refresh(); }
+    else { msg('bad','Something went wrong. Please try again, or tell your tutor.'); refresh(); }
+  } catch (err) { msg('bad','No connection. Please try again.'); refresh(); }
+});
+
+function showTab(id){
+  document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected', x.dataset.tab===id));
+  ['t1','t2','t3','t4','t5'].forEach(t=>$('#'+t).hidden = t!==id);
+  window.scrollTo({top:0});
+}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click', ()=>showTab(b.dataset.tab)));
+
+buildOrgs(); bldPics(); markBld(); titleBlock(); buildSched(); buildDesk(); buildPalette(); buildPlans(); modeUI(); buildGap(); showCase(); calc(); refresh();
+if (D.submitted) { $('#subMsg').innerHTML = '<div class="msg ok">You have already submitted from this browser.</div>'; }
+</script>
+</body>
+</html>
