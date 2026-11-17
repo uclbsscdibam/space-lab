@@ -928,6 +928,7 @@ $('#subForm').addEventListener('submit', async e=>{
     const res = await fetch(SUBMIT_URL, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(payload)});
     const j = await res.json();
     if (j.ok) { D.submitted = true; save(); msg('ok', j.late ? `Submitted (${j.minutesLate} min after the end of the tutorial). Thank you.` : 'Submitted. Thank you. The model answer is below.'); refresh(); }
+    else if (j.error === 'notopen') { msg('bad', `Submissions open at ${j.openAt} on Friday 20 November. Your work is saved in this browser: press Submit again after ${j.openAt}.`); refresh(); }
     else if (j.error === 'closed') { msg('bad', `Submissions are now closed (${j.closedAt}). Please speak to your tutor.`); refresh(); }
     else { msg('bad','Something went wrong. Please try again, or tell your tutor.'); refresh(); }
   } catch (err) { msg('bad','No connection. Please try again.'); refresh(); }
