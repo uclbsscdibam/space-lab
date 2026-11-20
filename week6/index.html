@@ -233,44 +233,8 @@ i.dot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5
 .progtxt{font-size:13px;font-weight:600;color:var(--muted);white-space:nowrap;min-width:92px;text-align:right}
 .tab .ok{margin-left:6px;color:var(--accent);font-weight:700}
 </style>
-<style>
-html.locked body>*:not(#lockScreen){display:none!important}
-#lockScreen{display:none}
-html.locked #lockScreen{display:flex;min-height:100vh;align-items:center;justify-content:center;padding:24px 16px;box-sizing:border-box}
-#lockScreen .box{max-width:460px;text-align:center;font-family:var(--f-body,Arial,sans-serif);color:var(--ink,#1d2321)}
-#lockScreen h1{font:700 26px var(--f-display,Arial,sans-serif);margin:0 0 10px}
-#lockScreen p{margin:6px 0;font-size:15px;line-height:1.5}
-#lockScreen .when{font-weight:600;font-size:17px;margin-top:14px}
-</style>
-<script>
-/* The Lab opens at OPEN_AT (London time). The time comes from the web server, not the device clock. */
-(function(){
-  var OPEN_AT = Date.UTC(2026, 10, 20, 11, 0, 0); // Friday 20 November 2026, 11:00 London (GMT)
-  var doc = document.documentElement;
-  if (/[?&]preview=bidi6\b/.test(location.search)) return;
-  var skew = 0;
-  var open = function(){ return Date.now() + skew >= OPEN_AT; };
-  var t = null;
-  var check = function(){
-    if (open()) { doc.classList.remove('locked'); if (t) { clearInterval(t); t = null; } }
-    else { doc.classList.add('locked'); if (!t) t = setInterval(check, 10000); }
-  };
-  check();
-  try {
-    fetch(location.pathname + '?t=' + Date.now(), {method:'HEAD', cache:'no-store'}).then(function(r){
-      var d = Date.parse(r.headers.get('Date')); if (!isNaN(d)) { skew = d - Date.now(); check(); }
-    }).catch(function(){});
-  } catch (e) {}
-})();
-</script>
 </head>
 <body>
-<div id="lockScreen" role="status"><div class="box">
-  <h1>Space Requirements Lab</h1>
-  <p>This page is not open yet.</p>
-  <p class="when">It opens at 11:00 on Friday 20 November.</p>
-  <p>It will open by itself at that time, or refresh the page then.</p>
-</div></div>
 <div class="wrap">
   <header>
     <div class="eyebrow">BIDI0008 · Tutorial 6 · Space requirements</div>
