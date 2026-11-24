@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -992,6 +992,54 @@ $('#zpal').addEventListener('click', e=>{ const b = e.target.closest('button'); 
 function syncTools(){ document.querySelectorAll('[data-t]').forEach(x=>x.classList.toggle('on', x.dataset.t===tool)); }
 render(); syncTools();
 
+/* ---------- picture of the comparison (both plans, table, answers, name), sent with the submission ---------- */
+const xesc = t => String(t==null?'':t).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\ufffe\uffff]/g,'').replace(/[\ud800-\udbff](?![\udc00-\udfff])|(^|[^\ud800-\udbff])[\udc00-\udfff]/g,'$1').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function planPic(p, x, y, w){ // current layout as plain SVG, w px wide
+  const W = p.cols*CELL, H = p.rows*CELL, VW = W+M.l+M.r, VH = H+M.t+M.b, rt = S.route[p.id] || ''; let c1 = '';
+  for (let r=0;r<p.rows;r++) for (let c=0;c<p.cols;c++){ if (p.fixed(c,r)) continue;
+    const z = zoneAt(p,c,r), fr0 = fixedRoute(p,c,r), isR = fr0 || rt[r*p.cols+c] === 'R', at = `x="${c*CELL}" y="${r*CELL}" width="${CELL}" height="${CELL}"`;
+    c1 += `<rect ${at} fill="${isR ? (fr0?'#3a3f4a':'#7a8090') : z ? ZC[z] : '#fbfbf9'}" fill-opacity="${isR ? 0.9 : z ? 0.34 : 1}" stroke="#d9dde0" stroke-width="0.03"/>`;
+    if (!isR && guideAt(p,c,r)) c1 += `<rect ${at} fill="url(#hatch)"/>`;
+    if (p.doors.entrance.some(([ec,er])=>ec===c&&er===r)) c1 += `<rect x="${c*CELL+.1}" y="${r*CELL+.1}" width="${CELL-.2}" height="${CELL-.2}" fill="none" stroke="#b3261e" stroke-width="0.2"/>`; }
+  const bad = problems().badIdx;
+  const bl = S.blocks.map((b,i)=>{ if (b.p!==p.id) return ''; const [bw,bh] = dims(b), at = `x="${b.c*CELL}" y="${b.r*CELL}" width="${bw*CELL}" height="${bh*CELL}"`;
+    return blockSVG(b).replace('<svg ', `<svg ${at} `) + (bad.has(i) ? `<rect ${at} fill="none" stroke="#d1242f" stroke-width="0.14" stroke-dasharray="0.4 0.25"/>` : ''); }).join('');
+  const wl = wallSVG(p).replace('<svg ', `<svg x="0" y="0" width="${W}" height="${H}" `);
+  return `<svg x="${x}" y="${y}" width="${w}" height="${w*VH/VW}" viewBox="${-M.l} ${-M.t} ${VW} ${VH}" font-family="monospace"><rect x="${-M.l}" y="${-M.t}" width="${VW}" height="${VH}" fill="#fff"/>${c1}${drawPlan(p)}${bl}${wl}</svg>`;
+}
+function comparisonSVG(){
+  const keep = D.v, w = D.who || {}, cmp = D.cmp || {}, p = cur()[0], PW = 1800, G = 30, CW = (PW-3*G)/2, out = [];
+  const g = document.createElement('canvas').getContext('2d'), F = 'Arial, Helvetica, sans-serif';
+  const text = (t,x,y,size,bold,col,anchor) => out.push(`<text x="${x}" y="${y}" font-size="${size}" font-family="${F}"${bold?' font-weight="700"':''} fill="${col||'#1d2321'}"${anchor?` text-anchor="${anchor}"`:''}>${xesc(t)}</text>`);
+  const wrap = (t,size,max) => { g.font = `${size}px ${F}`; const L = []; String(t||'').split('\n').forEach(par=>{ let ln = ''; par.split(/\s+/).forEach(word=>{
+      while (g.measureText(word).width > max) { let k = word.length; while (k>1 && g.measureText(word.slice(0,k)).width > max) k--; if (ln) { L.push(ln); ln=''; } L.push(word.slice(0,k)); word = word.slice(k); }
+      const n = ln ? ln+' '+word : word; if (g.measureText(n).width > max && ln) { L.push(ln); ln = word; } else ln = n; }); L.push(ln); }); return L; };
+  const m = [metrics(1), metrics(2)], zd = zoneDiff(); let y = 56;
+  text(w['s-name'], G, y, 36, 1); text(`BIDI0008 Tutorial 7 · ${p.label}`, PW-G, y, 24, 0, '#5d6763', 'end'); y += 36;
+  text([w['s-tut'], (w['s-num']||'').replace(/\s/g,''), w['s-email']].filter(Boolean).join(' · '), G, y, 24, 0, '#5d6763'); y += 26;
+  const ph = CW*(p.rows*CELL+M.t+M.b)/(p.cols*CELL+M.l+M.r);
+  [1,2].forEach(v=>{ D.v = v; useLayout(); const x = G+(v-1)*(CW+G); out.push(planPic(p, x, y, CW)); text(`Layout ${v}: ${p.routes[v].name}`, x+CW/2, y+ph+32, 24, 1, '#1d2321', 'middle'); });
+  D.v = keep; useLayout(); y += ph+76;
+  const rows = [['Completion (zones, work settings, rooms)','done'],['Checks passed','checks'],['Work settings (target 36)','ws'],['Fixed desks','fixed'],['Work settings within 4.5 m of a window','nearWin'],['Squares used by routes','route'],['Squares left empty','free'],['Walls added','walls']].map(([t,k])=>[t,m[0][k],m[1][k]]);
+  [['','Layout 1','Layout 2'],...rows,['Zoning changed (layout 2)','',zd+'%']].forEach((r,i)=>{ if (i===0) out.push(`<rect x="${G}" y="${y-26}" width="${PW-2*G}" height="36" fill="#EEDEFF"/>`);
+    text(r[0],G+10,y,22); text(r[1],PW*0.6,y,22,1,'','middle'); text(r[2],PW*0.85,y,22,1,'','middle'); out.push(`<line x1="${G}" x2="${PW-G}" y1="${y+10}" y2="${y+10}" stroke="#d9dde0"/>`); y += 36; });
+  y += 14;
+  const para = (head,t,x,wd) => { let yy = y+28; text(head,x,yy,23,1,'#361A54'); yy += 34; wrap(t,22,wd).forEach(l=>{ text(l,x,yy,22); yy += 30; }); return yy; };
+  y = Math.max(para('Layout 1: what works well / not', cmp.q1, G, CW), para('Layout 2: what works well / not', cmp.q2, 2*G+CW, CW)) + 10;
+  y = para('Recommendation', cmp.q3, G, PW-2*G) + 10;
+  const PH = Math.min(6000, Math.ceil(y));
+  return {w:PW, h:PH, svg:`<svg xmlns="http://www.w3.org/2000/svg" width="${PW}" height="${PH}" viewBox="0 0 ${PW} ${PH}"><defs><pattern id="hatch" width="0.5" height="0.5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="0.15" height="0.5" fill="#fff" fill-opacity="0.6"/></pattern></defs><rect width="${PW}" height="${PH}" fill="#fff"/>${out.join('')}</svg>`};
+}
+// resolves to a JPEG data URL, or '' if this browser cannot make it (the answers are still sent)
+function comparisonImage(){
+  return new Promise(done=>{ const t = setTimeout(()=>done(''), 10000), end = u => { clearTimeout(t); done(u); };
+    try { const c = comparisonSVG(), im = new Image();
+      im.onload = ()=>{ try { const cv = document.createElement('canvas'); cv.width = c.w; cv.height = c.h; const x = cv.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0,0,c.w,c.h); x.drawImage(im,0,0,c.w,c.h); const u = cv.toDataURL('image/jpeg', 0.85); end(u.startsWith('data:image/jpeg') ? u : ''); } catch(e) { end(''); } };
+      im.onerror = ()=>end(''); const box = document.createElement('div'); box.innerHTML = c.svg; // parsed as HTML first, so the plan code does not have to be strict XML
+      im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(new XMLSerializer().serializeToString(box.firstChild));
+    } catch(e) { end(''); } });
+}
+
 /* ---------- submission (individual) ---------- */
 // completion of the required parts of a layout: work settings, kit rooms, zone squares (each capped at 100%)
 const ROOMS_NEED = KIT.filter(k=>k.need).reduce((s,k)=>s+k.need,0), ZONE_NEED = Object.values(ZT).reduce((a,b)=>a+b,0), DONE_MIN = 80;
@@ -1032,9 +1080,11 @@ $('#sbtn').addEventListener('click', async ()=>{
     checks1: m1.checks, checks2: m2.checks, done1: completion(1).pct + '%', done2: completion(2).pct + '%', ws1: m1.ws, ws2: m2.ws, fixed1: m1.fixed, fixed2: m2.fixed, near1: m1.nearWin, near2: m2.nearWin,
     route1n: m1.route, route2n: m2.route, free1: m1.free, free2: m2.free, walls1: m1.walls, walls2: m2.walls, zoneDiff: zoneDiff(),
     items1: itemList(1), items2: itemList(2), map1: layoutMap(1), map2: layoutMap(2),
-    q1: D.cmp.q1, q2: D.cmp.q2, q3: D.cmp.q3};
+    q1: D.cmp.q1, q2: D.cmp.q2, q3: D.cmp.q3,
+    layout: JSON.stringify({b:D.bld, l1:D.L[D.bld+'1'], l2:D.L[D.bld+'2']})};
   D.v = keep; useLayout();
   $('#sbtn').disabled = true; smsg('', 'Submitting…');
+  payload.image = await comparisonImage();
   try {
     const res = await fetch(SUBMIT_URL, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(payload)});
     const j = await res.json();
