@@ -366,6 +366,7 @@ html.locked body>*:not(#lockScreen){display:none!important}
 html.locked #lockScreen{display:flex;min-height:100vh;align-items:center;justify-content:center;padding:24px 16px;box-sizing:border-box;text-align:center}
 #lockScreen h1{margin:0 0 10px}
 #lockScreen p{margin:6px 0;font-size:15px;line-height:1.5}
+#lockRefresh{margin-top:14px;padding:10px 28px;font-size:16px;font-weight:600;border:0;border-radius:8px;background:#1f4e79;color:#fff;cursor:pointer}
 #lockScreen .when{font-weight:600;font-size:17px;margin-top:14px}
 </style>
 <script>
@@ -396,7 +397,7 @@ html.locked #lockScreen{display:flex;min-height:100vh;align-items:center;justify
   <h1>Indicative Space Planning Lab</h1>
   <p>This page is not open yet.</p>
   <p class="when">It opens at 11:00 on Friday 27 November.</p>
-  <p>It will open by itself at that time, or refresh the page then.</p>
+  <p><button type="button" id="lockRefresh" onclick="location.reload()">Refresh</button></p>
 </div></div>
 <header class="wrap7"><div class="top7"><h1>Layout Lab · Indicative space planning</h1>
 <div class="seg"><button data-b="A">A · Converted warehouse</button><button data-b="B">B · L-shaped corner floor</button></div></div>
